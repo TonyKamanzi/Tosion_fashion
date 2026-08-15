@@ -18,7 +18,7 @@ export default function Hero() {
                         fill
                         sizes="50vw"
                         priority
-                        className="object-cover  grayscale-35 contrast-[1.05] scale-[1.02]"
+                        className="object-cover  grayscale-35 contrast-[1.05] transition-transform duration-300 hover:scale-105"
                     />
                     <div className="absolute bottom-7 left-7 font-mono text-[11px] text-bone tracking-widest flex items-center gap-2.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#7FBF7F] shadow-[0_0_0_3px_rgba(127,191,127,0.25)]" />
