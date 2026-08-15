@@ -52,7 +52,7 @@ export default function Category() {
     
     return (
         <div>
-            <div className="px-[5vw] pt-27.5 pb-0.5">
+            <div className="px-[5vw] pt-27.5 pb-0.5 bg-bone-2">
                 <div className="flex justify-between items-end mb-13 gap-5 flex-wrap">
                     <h2 className="font-display font-medium text-[clamp(30px,3.4vw,46px)] leading-[1.05] tracking-[-0.01em]">
                         Shop by category

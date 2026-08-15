@@ -32,7 +32,7 @@ const columns = [
 
 export default function Footer() {
     return (
-        <footer className="px-[5vw] pt-20 pb-7.5">
+        <footer className="px-[5vw] pt-20 pb-7.5 bg-bone">
             <div className="grid grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 lg:gap-10 pb-15 border-b border-ink/15">
                 <div className="col-span-2 lg:col-span-1">
                     <div className="font-display font-semibold text-2xl tracking-[0.02em] mb-4">

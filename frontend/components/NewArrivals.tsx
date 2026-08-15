@@ -36,7 +36,7 @@ const products = [
 ];
 export default function NewArrivals() {
     return (
-        <section id="collection" className="px-[5vw] py-27.5">
+        <section id="collection" className="px-[5vw] py-27.5 bg-bone-2">
             <div className="flex justify-between items-end mb-13 gap-5 flex-wrap">
                 <h2 className="font-display font-medium text-[clamp(30px,3.4vw,46px)] leading-[1.05] tracking-[-0.01em]">
                     New arrivals
