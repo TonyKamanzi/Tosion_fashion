@@ -1,10 +1,11 @@
-import Hero from '@/components/Hero';
-import React from 'react'
+import Category from "@/components/Category";
+import Hero from "@/components/Hero";
 
 export default function page() {
-  return (
-    <div className="min-h-screen">
-      <Hero />
-    </div>
-  )
+    return (
+        <div className="min-h-screen">
+            <Hero />
+            <Category />
+        </div>
+    );
 }
