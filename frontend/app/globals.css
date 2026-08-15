@@ -12,4 +12,15 @@
   --color-wine-deep: #420F14;
   --color-gold: #A6813C;
   --color-sage: #8B8A7D;
+
+  --animate-scroll: scroll 32s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }

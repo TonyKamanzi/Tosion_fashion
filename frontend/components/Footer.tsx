@@ -32,8 +32,8 @@ const columns = [
 
 export default function Footer() {
     return (
-        <footer className="px-[5vw] pt-20 pb-[30px]">
-            <div className="grid grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 lg:gap-10 pb-[60px] border-b border-ink/15">
+        <footer className="px-[5vw] pt-20 pb-7.5">
+            <div className="grid grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 lg:gap-10 pb-15 border-b border-ink/15">
                 <div className="col-span-2 lg:col-span-1">
                     <div className="font-display font-semibold text-2xl tracking-[0.02em] mb-4">
                         TOSION
@@ -45,7 +45,7 @@ export default function Footer() {
                 </div>
                 {columns.map((col) => (
                     <div key={col.heading} className="footer-col">
-                        <h5 className="font-mono text-[11px] tracking-[0.1em] uppercase text-sage mb-[18px]">
+                        <h5 className="font-mono text-[11px] tracking-widest uppercase text-sage mb-4.5">
                             {col.heading}
                         </h5>
                         <div>
