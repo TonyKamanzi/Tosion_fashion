@@ -1,7 +1,10 @@
+import Hero from '@/components/Hero';
 import React from 'react'
 
 export default function page() {
   return (
-    <div>page</div>
+    <div className="min-h-screen">
+      <Hero />
+    </div>
   )
 }
