@@ -2,6 +2,7 @@ import Category from "@/components/Category";
 import Editorial from "@/components/Editorial";
 import Hero from "@/components/Hero";
 import NewArrivals from "@/components/NewArrivals";
+import Newsletter from "@/components/Newsletter";
 
 export default function page() {
     return (
@@ -10,6 +11,7 @@ export default function page() {
             <Category />
             <NewArrivals />
             <Editorial />
+            <Newsletter />
         </div>
     );
 }
