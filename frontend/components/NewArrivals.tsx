@@ -51,7 +51,7 @@ export default function NewArrivals() {
                     <div key={product.name} className="group relative">
                         <div className="relative aspect-3/4 overflow-hidden bg-bone-2 mb-4">
                             {product.tag && (
-                                <span className="absolute top-3.5 -right-px bg-wine text-bone font-mono text-[11px] tracking-wider px-2.5 py-1.5 before:absolute before:content-[''] before:top-0 before:-left-2.25 before:border-solid before:border-[14.5px_9px_14.5px_0] before:border-transparent before:border-r-wine">
+                                <span className="absolute z-10 top-3.5 -right-px bg-wine text-bone font-mono text-[11px] tracking-wider px-2.5 py-1.5 before:absolute before:content-[''] before:top-0 before:-left-2.25 before:border-solid before:border-[14.5px_9px_14.5px_0] before:border-transparent before:border-r-wine">
                                     {product.tag}
                                 </span>
                             )}
@@ -62,7 +62,7 @@ export default function NewArrivals() {
                                 sizes="(min-width: 900px) 25vw, 50vw"
                                 className="object-cover transition-transform duration-600 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.06]"
                             />
-                            <div className="absolute left-3 right-3 bottom-3 bg-bone text-ink text-center py-3 font-mono text-[11px] tracking-[0.08em] uppercase opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                            <div className="absolute z-10 left-3 right-3 bottom-3 bg-bone text-ink text-center py-3 font-mono text-[11px] tracking-[0.08em] uppercase opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
                                 Quick add
                             </div>
                         </div>

@@ -12,7 +12,7 @@ const categories = [
     },
     {
         href: "/shop/knitwear",
-        src: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=900&q=85",
+        src: "https://images.unsplash.com/photo-1687275167528-5aac76c3e782?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         alt: "Woman wearing a knit sweater",
         eyebrow: "02 — Softwear",
         label: "Knitwear",

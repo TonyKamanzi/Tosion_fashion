@@ -17,9 +17,9 @@ export default function Header() {
     return (
         <div className="border-b border-ink/15 bg-bone/90 backdrop-blur-md h-20 fixed w-full z-50">
             <header className="flex justify-between items-center h-full px-4 sm:px-6 md:px-8 lg:mx-20">
-                <h1 className="font-display font-semibold text-2xl tracking-[0.02em]">
+                <Link href={"/"} className="font-display font-semibold text-2xl tracking-[0.02em]">
                     TOSION
-                </h1>
+                </Link>
 
                 <nav className="hidden lg:flex gap-9 text-[13px] font-sans tracking-[0.03em]">
                     {links.map((link) => (
