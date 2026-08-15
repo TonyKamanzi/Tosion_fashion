@@ -25,8 +25,8 @@ export default function Hero() {
                         In stock — ships in 48h
                     </div>
                 </div>
-                <div className="flex flex-col justify-center px-[6vw] py-13 min-[900px]:px-[4.5vw] min-[900px]:py-[8vw] border-t min-[900px]:border-t-0 min-[900px]:border-l border-ink/15">
-                    <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-wine">
+                <div className="flex flex-col justify-center px-[6vw] py-13 min-[900px]:px-[4.5vw] min-[900px]:py-[8vw] border-t min-[900px]:border-t-0 min-[900px]:border-l border-ink/15 bg-bone-2">
+                    <span className="font-mono text-[11px] tracking-widest uppercase text-wine">
                         Autumn / Winter 2026
                     </span>
                     <h1 className="font-display font-medium text-[clamp(42px,5.2vw,76px)] leading-[1.05] tracking-[-0.01em] mt-4.5 mb-6">
