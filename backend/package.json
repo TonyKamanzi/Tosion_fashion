@@ -9,9 +9,9 @@
   "start": "node dist/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "kamanzi Tony",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
