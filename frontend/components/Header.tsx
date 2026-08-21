@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const links = [
     { href: "/", label: "New In" },
@@ -11,8 +13,55 @@ const links = [
     { href: "/journal", label: "Journal" },
 ];
 
+// shape returned by GET /auth/me
+type SessionUser = {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+};
+
 export default function Header() {
     const [open, setOpen] = useState(false);
+    const [user, setUser] = useState<SessionUser | null>(null);
+    const [accountOpen, setAccountOpen] = useState(false);
+    const accountRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+
+    // pick up the current session so the navbar reacts to login/logout
+    useEffect(() => {
+        axios
+            .get<SessionUser>("http://localhost:2000/auth/me", { withCredentials: true })
+            .then((res) => setUser(res.data))
+            .catch(() => setUser(null));
+    }, []);
+
+    // close the account dropdown when clicking outside of it
+    useEffect(() => {
+        if (!accountOpen) return;
+        const onClickAway = (e: MouseEvent) => {
+            if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+                setAccountOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", onClickAway);
+        return () => document.removeEventListener("mousedown", onClickAway);
+    }, [accountOpen]);
+
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                "http://localhost:2000/auth/logout",
+                {},
+                { withCredentials: true }
+            );
+        } finally {
+            setUser(null);
+            setAccountOpen(false);
+            router.push("/");
+        }
+    };
 
     return (
         <div className="border-b border-ink/15 bg-bone/90 backdrop-blur-md h-20 fixed w-full z-50">
@@ -34,7 +83,62 @@ export default function Header() {
                     <Link className="hidden sm:inline" href="/search">
                         Search
                     </Link>
-                    <Link href="/account">Account</Link>
+
+                    {/* Logged out: plain Account link · Logged in: first name + dropdown */}
+                    {user ? (
+                        <div ref={accountRef} className="relative">
+                            <button
+                                type="button"
+                                aria-label="Toggle account menu"
+                                onClick={() => setAccountOpen(!accountOpen)}
+                                className="flex items-center gap-1.5 hover:text-wine transition-colors cursor-pointer"
+                            >
+                                {user.firstName}
+                                <svg
+                                    width="10"
+                                    height="10"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    className={`transition-transform duration-300 ${accountOpen ? "rotate-180" : ""}`}
+                                >
+                                    <path d="m6 9 6 6 6-6" />
+                                </svg>
+                            </button>
+
+                            {accountOpen && (
+                                <div className="animate-fade absolute right-0 top-full mt-4 w-56 bg-bone border border-ink/15 shadow-lg">
+                                    {/* name + email */}
+                                    <div className="px-4 py-3.5 border-b border-ink/15">
+                                        <span className="block font-mono text-[9.5px] tracking-[0.22em] uppercase text-gold mb-2">
+                                            Signed in
+                                        </span>
+                                        <p className="font-display font-medium text-[16px] text-ink leading-tight">
+                                            {user.firstName} {user.lastName}
+                                        </p>
+                                        <p className="font-sans text-[12px] text-sage truncate mt-1">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                    {/* logout */}
+                                    <button
+                                        type="button"
+                                        onClick={handleLogout}
+                                        className="w-full text-left px-4 py-3 font-mono text-[11px] tracking-[0.08em] uppercase text-ink hover:text-wine transition-colors cursor-pointer flex items-center justify-between group"
+                                    >
+                                        Logout
+                                        <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
+                                            →
+                                        </span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <Link href="/account">Account</Link>
+                    )}
+
                     <Link
                         className="font-mono text-[11px] tracking-widest border px-3.5 py-2 border-ink hover:bg-ink hover:text-bone transition-colors"
                         href="/bag"

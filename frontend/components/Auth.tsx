@@ -1,16 +1,67 @@
 "use client";
 
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 // Which form is currently visible: "login" (Sign In) or "register" (Create Account)
 type Tab = "login" | "register";
 
+
 export default function Auth() {
     // tab state controls which panel is shown; starts on the login form
     const [tab, setTab] = useState<Tab>("login");
+    const router = useRouter();
+    const [firstName, setFirstName] = useState<string>("");
+    const [lastName, setLastName] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    // login form fields
+    const [loginEmail, setLoginEmail] = useState<string>("");
+    const [loginPassword, setLoginPassword] = useState<string>("");
+    // feedback shown under the active form
+    const [notice, setNotice] = useState<string>("");
 
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            await axios.post(
+                "http://localhost:2000/auth/register",
+                { firstName, lastName, email, password },
+                { withCredentials: true }
+            );
+
+            // account created — send the user to the login form to sign in
+            setNotice("Account created successfully. Sign in to continue.");
+            setFirstName("");
+            setLastName("");
+            setEmail("");
+            setPassword("");
+            setTab("login");
+        } catch {
+            setNotice("Registration failed. Try a different email.");
+        }
+    }
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            await axios.post(
+                "http://localhost:2000/auth/login",
+                { email: loginEmail, password: loginPassword },
+                { withCredentials: true }
+            );
+
+            // logged in — go to the home page
+            router.push("/");
+        } catch {
+            setNotice("Invalid email or password.");
+        }
+    }
     return (
         <div className="bg-bone min-h-screen flex flex-col">
             {/* Minimal auth header: brand logo + link back to the shop */}
@@ -34,8 +85,10 @@ export default function Auth() {
                         src="https://picsum.photos/id/1027/1000/1400"
                         alt="Editorial fashion image"
                         fill
+                        loading="eager"
                         sizes="(min-width: 860px) 50vw, 100vw"
                         className="object-cover grayscale-35 contrast-[1.05]"
+                        
                     />
                     <div className="absolute left-9 right-9 bottom-9 text-bone">
                         <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-gold block mb-3.5">
@@ -61,7 +114,10 @@ export default function Auth() {
                                 <button
                                     key={t.key}
                                     type="button"
-                                    onClick={() => setTab(t.key)}
+                                    onClick={() => {
+                                        setTab(t.key);
+                                        setNotice("");
+                                    }}
                                     // active tab gets ink text + a wine underline (scaleX animation)
                                     className={`font-mono text-[12px] tracking-[0.08em] uppercase pb-4 mr-8 relative text-sage transition-colors duration-300 after:absolute after:left-0 after:right-0 after:-bottom-px after:h-0.5 after:bg-wine after:transition-transform after:duration-300 ${
                                         tab === t.key
@@ -91,10 +147,7 @@ export default function Auth() {
                                     access.
                                 </p>
 
-                                <form
-                                    // preventDefault stops the page reload — hook up real auth here later
-                                    onSubmit={(e) => e.preventDefault()}
-                                >
+                                <form onSubmit={handleLogin}>
                                     {/* Email field: underline-styled input, mono uppercase label */}
                                     <div className="mb-6">
                                         <label
@@ -108,6 +161,8 @@ export default function Auth() {
                                             type="email"
                                             placeholder="you@email.com"
                                             required
+                                            value={loginEmail}
+                                            onChange={(e) => setLoginEmail(e.target.value)}
                                             className="w-full bg-transparent border-b border-ink pt-2.5 pb-3 px-0.5 font-sans text-[15px] text-ink outline-none transition-colors focus:border-wine placeholder:text-[#B7B3A6]"
                                         />
                                     </div>
@@ -124,6 +179,8 @@ export default function Auth() {
                                             type="password"
                                             placeholder="••••••••"
                                             required
+                                            value={loginPassword}
+                                            onChange={(e) => setLoginPassword(e.target.value)}
                                             className="w-full bg-transparent border-b border-ink pt-2.5 pb-3 px-0.5 font-sans text-[15px] text-ink outline-none transition-colors focus:border-wine placeholder:text-[#B7B3A6]"
                                         />
                                     </div>
@@ -155,6 +212,13 @@ export default function Auth() {
                                             →
                                         </span>
                                     </button>
+
+                                    {/* Inline feedback for login attempts */}
+                                    {notice && tab === "login" && (
+                                        <p className="mt-5 font-mono text-[11px] tracking-[0.04em] text-wine">
+                                            {notice}
+                                        </p>
+                                    )}
                                 </form>
 
                                 {/* "or continue with" divider with hairline rules on both sides */}
@@ -217,8 +281,7 @@ export default function Auth() {
                                 </p>
 
                                 <form
-                                    // preventDefault stops the page reload — hook up real registration here later
-                                    onSubmit={(e) => e.preventDefault()}
+                                 onSubmit={handleRegister}
                                 >
                                     {/* First & last name side by side (stacks to one column on mobile) */}
                                     <div className="grid grid-cols-1 min-[860px]:grid-cols-2 gap-4 mb-6">
@@ -234,7 +297,8 @@ export default function Auth() {
                                                 type="text"
                                                 placeholder="First name"
                                                 required
-                                                className="w-full bg-transparent border-b border-ink pt-2.5 pb-3 px-0.5 font-sans text-[15px] text-ink outline-none transition-colors focus:border-wine placeholder:text-[#B7B3A6]"
+                                                    className="w-full bg-transparent border-b border-ink pt-2.5 pb-3 px-0.5 font-sans text-[15px] text-ink outline-none transition-colors focus:border-wine placeholder:text-[#B7B3A6]"
+                                                    onChange={(e) => setFirstName(e.target.value)}
                                             />
                                         </div>
                                         <div>
@@ -250,6 +314,7 @@ export default function Auth() {
                                                 placeholder="Last name"
                                                 required
                                                 className="w-full bg-transparent border-b border-ink pt-2.5 pb-3 px-0.5 font-sans text-[15px] text-ink outline-none transition-colors focus:border-wine placeholder:text-[#B7B3A6]"
+                                                onChange={(e) => setLastName(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -267,6 +332,7 @@ export default function Auth() {
                                             placeholder="you@email.com"
                                             required
                                             className="w-full bg-transparent border-b border-ink pt-2.5 pb-3 px-0.5 font-sans text-[15px] text-ink outline-none transition-colors focus:border-wine placeholder:text-[#B7B3A6]"
+                                            onChange={(e) => setEmail(e.target.value)}
                                         />
                                     </div>
                                     {/* Password field (new account password) */}
@@ -283,6 +349,7 @@ export default function Auth() {
                                             placeholder="Minimum 8 characters"
                                             required
                                             className="w-full bg-transparent border-b border-ink pt-2.5 pb-3 px-0.5 font-sans text-[15px] text-ink outline-none transition-colors focus:border-wine placeholder:text-[#B7B3A6]"
+                                            onChange={(e) => setPassword(e.target.value)}
                                         />
                                     </div>
 
@@ -307,6 +374,13 @@ export default function Auth() {
                                             →
                                         </span>
                                     </button>
+
+                                    {/* Inline feedback for registration attempts */}
+                                    {notice && tab === "register" && (
+                                        <p className="mt-5 font-mono text-[11px] tracking-[0.04em] text-wine">
+                                            {notice}
+                                        </p>
+                                    )}
                                 </form>
 
                                 {/* Legal notice with links to terms & privacy */}
