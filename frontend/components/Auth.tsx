@@ -229,7 +229,7 @@ export default function Auth() {
                                 </div>
 
                                 {/* Social login buttons (Google + Apple) — styling only for now */}
-                                <button
+                                <a  href="http://localhost:2000/auth/google"
                                     type="button"
                                     className="flex items-center justify-center gap-2.5 bg-transparent text-ink w-full py-3.5 px-5 mb-3 font-sans text-[13.5px] font-medium border border-ink cursor-pointer transition-all hover:bg-ink hover:text-bone"
                                 >
@@ -240,7 +240,7 @@ export default function Auth() {
                                         <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.9 2.6-2.6 4.8-4.9 6.3l6.2 5.3C40.8 36 44 30.9 44 25c0-1.4-.1-2.7-.4-4.5z" />
                                     </svg>
                                     Continue with Google
-                                </button>
+                                </a>
                                 <button
                                     type="button"
                                     className="flex items-center justify-center gap-2.5 bg-transparent text-ink w-full py-3.5 px-5 mb-3 font-sans text-[13.5px] font-medium border border-ink cursor-pointer transition-all hover:bg-ink hover:text-bone"
