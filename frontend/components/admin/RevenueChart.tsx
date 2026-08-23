@@ -15,7 +15,7 @@ export default function RevenueChart() {
     return (
         <Panel title="Revenue — last 8 weeks" link="View report">
             <div className="p-6">
-                <div className="flex items-end gap-3.5 h-[180px] pt-2.5">
+                <div className="flex items-end gap-3.5 h-45 pt-2.5">
                     {weeks.map((week) => (
                         <div
                             key={week.label}
@@ -23,7 +23,7 @@ export default function RevenueChart() {
                         >
                             <div
                                 style={{ height: `${week.height}%` }}
-                                className={`w-full max-w-[34px] transition-colors duration-200 group-hover:bg-gold ${
+                                className={`w-full max-w-8.5 transition-colors duration-200 group-hover:bg-gold ${
                                     week.highlight ? "bg-wine" : "bg-bone-2"
                                 }`}
                             ></div>

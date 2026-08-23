@@ -51,13 +51,13 @@ export default function StatCards() {
     return (
         <div className="grid grid-cols-1 min-[800px]:grid-cols-2 min-[1100px]:grid-cols-4 gap-5 mb-9">
             {stats.map((stat) => (
-                <div key={stat.label} className="bg-white border border-ink/15 pt-[22px] px-[22px] pb-5">
-                    <div className="flex justify-between items-start mb-[18px]">
-                        <div className="w-[34px] h-[34px] bg-bone-2 flex items-center justify-center text-wine">
+                <div key={stat.label} className="bg-white border border-ink/15 pt-5.5 px-5.5 pb-5">
+                    <div className="flex justify-between items-start mb-4.5">
+                        <div className="w-8.5 h-8.5 bg-bone-2 flex items-center justify-center text-wine">
                             {stat.icon}
                         </div>
                         <span
-                            className={`font-mono text-[11px] py-[3px] px-2 flex items-center gap-1 ${
+                            className={`font-mono text-[11px] py-0.75 px-2 flex items-center gap-1 ${
                                 stat.trend === "up" ? "text-good bg-good/10" : "text-wine bg-wine/8"
                             }`}
                         >

@@ -80,13 +80,13 @@ export default function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="hidden min-[800px]:flex flex-col sticky top-0 h-screen bg-ink text-bone px-5 py-[26px]">
-            <div className="font-display font-semibold text-[22px] pt-1.5 px-2 pb-[26px] border-b border-bone/10 mb-[22px]">
+        <aside className="hidden min-[800px]:flex flex-col sticky top-0 h-screen bg-ink text-bone px-5 py-6.5">
+            <div className="font-display font-semibold text-[22px] pt-1.5 px-2 pb-6.5 border-b border-bone/10 mb-5.5">
                 MAISON <span className="text-gold">admin</span>
             </div>
 
             {navGroups.map((group) => (
-                <nav key={group.label} className="mb-[26px]">
+                <nav key={group.label} className="mb-6.5">
                     <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-bone/40 px-2 pb-2.5">
                         {group.label}
                     </div>
@@ -99,14 +99,14 @@ export default function Sidebar() {
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className={`flex items-center gap-3 py-[11px] px-2.5 rounded-sm text-sm transition-colors duration-200 mb-0.5 hover:bg-bone/5 hover:text-bone ${
+                                className={`flex items-center gap-3 py-2.75 px-2.5 rounded-sm text-sm transition-colors duration-200 mb-0.5 hover:bg-bone/5 hover:text-bone ${
                                     isActive ? "bg-wine text-bone" : "text-bone/70"
                                 }`}
                             >
                                 <span className="shrink-0 opacity-80">{item.icon}</span>
                                 {item.label}
                                 {item.badge !== undefined && (
-                                    <span className="ml-auto bg-bone/15 text-bone font-mono text-[10px] px-[7px] py-0.5 rounded-full">
+                                    <span className="ml-auto bg-bone/15 text-bone font-mono text-[10px] px-1.75 py-0.5 rounded-full">
                                         {item.badge}
                                     </span>
                                 )}

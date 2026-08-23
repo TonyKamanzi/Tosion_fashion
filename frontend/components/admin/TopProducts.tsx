@@ -43,18 +43,18 @@ export default function TopProducts() {
                             index < products.length - 1 ? "border-b border-ink/15" : ""
                         }`}
                     >
-                        <div className="relative w-[46px] h-14 shrink-0 bg-bone-2 overflow-hidden">
+                        <div className="relative w-11.5 h-14 shrink-0 bg-bone-2 overflow-hidden">
                             <Image src={product.img} alt={product.name} fill sizes="46px" className="object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h4 className="text-[13.5px] font-medium mb-[3px] whitespace-nowrap overflow-hidden text-ellipsis">
+                            <h4 className="text-[13.5px] font-medium mb-0.75 whitespace-nowrap overflow-hidden text-ellipsis">
                                 {product.name}
                             </h4>
                             <div className="text-[11.5px] text-sage">{product.sold} sold</div>
                         </div>
                         <div className="font-mono text-[12.5px] text-right shrink-0">
                             {product.amount}
-                            <span className="block text-good text-[10.5px] mt-[3px]">{product.delta}</span>
+                            <span className="block text-good text-[10.5px] mt-0.75">{product.delta}</span>
                         </div>
                     </div>
                 ))}

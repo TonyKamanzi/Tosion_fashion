@@ -32,7 +32,7 @@ export default function OrdersTable() {
     return (
         <Panel title="Recent orders" link="View all orders">
             <div className="overflow-x-auto">
-                <table className="w-full border-collapse min-w-[760px]">
+                <table className="w-full border-collapse min-w-190">
                     <thead>
                         <tr>
                             {columns.map((column) => (
