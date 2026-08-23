@@ -7,6 +7,7 @@ import session from "express-session"
 import authRoutes from "./routes/auth.routes.js"
 import heroRoutes from "./routes/hero.routes.js"
 import categoryRoutes from "./routes/category.routes.js"
+import arrivalRoutes from "./routes/arrival.routes.js"
 import cors from "cors"
 
 dotenv.config();
@@ -48,6 +49,7 @@ connectDB();
 app.use("/auth", authRoutes);
 app.use("/hero", heroRoutes);
 app.use("/categories", categoryRoutes);
+app.use("/arrivals", arrivalRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
