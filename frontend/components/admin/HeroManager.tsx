@@ -242,7 +242,7 @@ export default function HeroManager() {
                                             onClick={() => toggleMarqueeItem(index)}
                                             aria-label={item.enabled ? "Hide item" : "Show item"}
                                             title={item.enabled ? "Hide item" : "Show item"}
-                                            className={`shrink-0 w-[38px] h-[38px] border flex items-center justify-center transition-colors cursor-pointer ${
+                                            className={`shrink-0 w-9.5 h-9.5 border flex items-center justify-center transition-colors cursor-pointer ${
                                                 item.enabled
                                                     ? "border-ink/15 hover:border-ink"
                                                     : "border-wine/30 text-wine"
@@ -259,7 +259,7 @@ export default function HeroManager() {
                                             onClick={() => removeMarqueeItem(index)}
                                             aria-label="Remove item"
                                             title="Remove item"
-                                            className="shrink-0 w-[38px] h-[38px] border border-ink/15 flex items-center justify-center transition-colors hover:border-wine hover:text-wine cursor-pointer"
+                                            className="shrink-0 w-9.5 h-9.5 border border-ink/15 flex items-center justify-center transition-colors hover:border-wine hover:text-wine cursor-pointer"
                                         >
                                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                                         </button>
