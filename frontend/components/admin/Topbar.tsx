@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useAdminSession } from "./AdminSessionContext";
 
 type TopbarProps = {
@@ -8,8 +8,26 @@ type TopbarProps = {
     title?: ReactNode;
 };
 
+function greetingFor(date: Date): string {
+    const hours = date.getHours();
+    if (hours < 12) return "Good morning";
+    if (hours < 18) return "Good afternoon";
+    return "Good evening";
+}
+
 export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
     const user = useAdminSession();
+
+    // computed eagerly so even the SSR markup carries the right greeting;
+    // suppressHydrationWarning covers a server/client clock difference
+    const [greeting, setGreeting] = useState(() => greetingFor(new Date()));
+
+    // re-check every minute so the greeting flips on its own across hour boundaries
+    useEffect(() => {
+        const update = () => setGreeting(greetingFor(new Date()));
+        const id = setInterval(update, 60_000);
+        return () => clearInterval(id);
+    }, []);
 
     return (
         <div className="flex items-center justify-between flex-wrap gap-5 mb-[34px]">
@@ -17,10 +35,10 @@ export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
                 <span className="block font-mono text-[10.5px] tracking-[0.18em] uppercase text-wine">
                     {eyebrow}
                 </span>
-                <h1 className="mt-1.5 font-display font-medium text-[30px] leading-[1.05] tracking-[-0.01em]">
+                <h1 suppressHydrationWarning className="mt-1.5 font-display font-medium text-[30px] leading-[1.05] tracking-[-0.01em]">
                     {title ?? (
                         <>
-                            Good morning, <em className="italic text-wine">{user.firstName}</em>
+                            {greeting}, <em className="italic text-wine">{user.firstName}</em>
                         </>
                     )}
                 </h1>

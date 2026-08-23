@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import axios from "axios";
 import { useAdminSession } from "./AdminSessionContext";
 
 type NavItem = {
@@ -77,10 +78,23 @@ const navGroups: { label: string; items: NavItem[] }[] = [
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
     const sessionUser = useAdminSession();
 
     const name = `${sessionUser.firstName} ${sessionUser.lastName}`;
     const role = sessionUser.role === "admin" ? "Store Admin" : sessionUser.role;
+
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                "http://localhost:2000/auth/logout",
+                {},
+                { withCredentials: true }
+            );
+        } finally {
+            router.replace("/account");
+        }
+    };
 
     return (
         <aside className="hidden min-[800px]:flex flex-col sticky top-0 h-screen bg-ink text-bone px-5 py-6.5">
@@ -123,10 +137,19 @@ export default function Sidebar() {
                 <div className="w-9 h-9 rounded-full bg-gold text-ink flex items-center justify-center font-display font-semibold text-sm shrink-0">
                     {name[0]}
                 </div>
-                <div>
-                    <div className="text-[13.5px] font-medium">{name}</div>
+                <div className="min-w-0">
+                    <div className="text-[13.5px] font-medium truncate">{name}</div>
                     <div className="text-[11.5px] text-bone/50">{role}</div>
                 </div>
+                <button
+                    type="button"
+                    onClick={handleLogout}
+                    aria-label="Log out"
+                    title="Log out"
+                    className="ml-auto p-2 rounded-sm text-bone/50 transition-colors duration-200 hover:text-bone hover:bg-bone/5 cursor-pointer"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                </button>
             </div>
         </aside>
     );
