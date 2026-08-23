@@ -5,6 +5,7 @@ import https from "node:https";
 import connectDB from "./config/db.js";
 import session from "express-session"
 import authRoutes from "./routes/auth.routes.js"
+import heroRoutes from "./routes/hero.routes.js"
 import cors from "cors"
 
 dotenv.config();
@@ -44,6 +45,7 @@ connectDB();
 
 //routes
 app.use("/auth", authRoutes);
+app.use("/hero", heroRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
