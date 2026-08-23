@@ -182,7 +182,6 @@ export const googleLogin = (req: Request, res: Response) => {
   const authorizationUrl = googleClient.generateAuthUrl({
     access_type: "online",
     scope: ["openid", "profile", "email"],
-    prompt: "select_account",
   });
 
   res.redirect(authorizationUrl);
@@ -217,7 +216,7 @@ export const googleCallback = async (
     // Verify Google ID token
     const ticket = await googleClient.verifyIdToken({
       idToken: tokens.id_token,
-      audience: process.env.GOOGLE_CLIENT_ID!,
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -279,9 +278,11 @@ export const googleCallback = async (
     // Reuse your existing Express session
     req.session.user = toSafeUser(user);
 
-    // Redirect back to Next.js (home, so the header reflects the login)
+    // Redirect back to Next.js
+    console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
     res.redirect(
-      `${process.env.FRONTEND_URL ?? "http://localhost:3000"}/`
+      
+      `${process.env.FRONTEND_URL}/account`
     );
     } catch (error) {
   console.error("Google authentication error:", error);
