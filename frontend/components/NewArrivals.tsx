@@ -1,6 +1,19 @@
 import Image from "next/image";
+import axios from "axios";
 
-const products = [
+type ArrivalItem = {
+    src: string;
+    alt: string;
+    // badge on the image corner, e.g. "NEW" or "−20%" (empty = no badge)
+    tag: string;
+    name: string;
+    category: string;
+    price: string;
+    enabled: boolean;
+};
+
+// shown if the backend is unreachable — mirrors the seeded defaults
+const FALLBACK_ARRIVALS: ArrivalItem[] = [
     {
         src: "https://images.unsplash.com/photo-1669575903350-9a349b411810?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         alt: "Model wearing a structured wool coat",
@@ -8,14 +21,16 @@ const products = [
         name: "Wool Overcoat",
         category: "Outerwear",
         price: "$328",
+        enabled: true,
     },
     {
         src: "https://images.unsplash.com/photo-1574201635302-388dd92a4c3f?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         alt: "Model wearing a textured knit sweater",
-        tag: null,
+        tag: "",
         name: "Ribbed Knit Sweater",
         category: "Knitwear",
         price: "$148",
+        enabled: true,
     },
     {
         src: "https://images.unsplash.com/photo-1624378441864-6eda7eac51cb?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -24,25 +39,62 @@ const products = [
         name: "Tailored Trousers",
         category: "Bottoms",
         price: "$168",
+        enabled: true,
     },
     {
         src: "https://images.unsplash.com/photo-1575403538007-acb790100421?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         alt: "Elegant fashion accessories and jewelry",
-        tag: null,
+        tag: "",
         name: "Leather Crossbody",
         category: "Accessories",
         price: "$212",
+        enabled: true,
     },
 ];
-export default function NewArrivals() {
+
+const FALLBACK_HEADER = {
+    title: "New arrivals",
+    description: "This week's edit — restocked staples and a few limited runs.",
+};
+
+async function getArrivals(): Promise<ArrivalItem[]> {
+    try {
+        const res = await axios.get<ArrivalItem[]>("http://localhost:2000/arrivals", {
+            timeout: 4000,
+        });
+        return res.data;
+    } catch {
+        return FALLBACK_ARRIVALS;
+    }
+}
+
+async function getHeader(): Promise<{ title: string; description: string }> {
+    try {
+        const res = await axios.get<{
+            title: string;
+            description: string;
+        }>("http://localhost:2000/arrivals/header", { timeout: 4000 });
+        return res.data;
+    } catch {
+        return FALLBACK_HEADER;
+    }
+}
+
+export default async function NewArrivals() {
+    const [fetched, header] = await Promise.all([getArrivals(), getHeader()]);
+    const products = fetched.filter((product) => product.enabled);
+
+    // nothing to show when every arrival is hidden
+    if (products.length === 0) return null;
+
     return (
         <section id="collection" className="px-[5vw] py-27.5 bg-bone-2">
             <div className="flex justify-between items-end mb-13 gap-5 flex-wrap">
                 <h2 className="font-display font-medium text-[clamp(30px,3.4vw,46px)] leading-[1.05] tracking-[-0.01em]">
-                    New arrivals
+                    {header.title}
                 </h2>
                 <p className="max-w-[38ch] text-sage text-[14px] leading-[1.6]">
-                    This week&apos;s edit — restocked staples and a few limited runs.
+                    {header.description}
                 </p>
             </div>
 
