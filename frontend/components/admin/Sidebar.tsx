@@ -76,8 +76,19 @@ const navGroups: { label: string; items: NavItem[] }[] = [
 
 const user = { name: "Amara Diallo", role: "Store Admin" };
 
-export default function Sidebar() {
+type SidebarProps = {
+    user?: {
+        firstName: string;
+        lastName: string;
+        role: string;
+    };
+};
+
+export default function Sidebar({ user: sessionUser }: SidebarProps) {
     const pathname = usePathname();
+
+    const name = sessionUser ? `${sessionUser.firstName} ${sessionUser.lastName}` : user.name;
+    const role = sessionUser ? (sessionUser.role === "admin" ? "Store Admin" : sessionUser.role) : user.role;
 
     return (
         <aside className="hidden min-[800px]:flex flex-col sticky top-0 h-screen bg-ink text-bone px-5 py-6.5">
@@ -118,11 +129,11 @@ export default function Sidebar() {
 
             <div className="mt-auto pt-5 border-t border-bone/10 flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-gold text-ink flex items-center justify-center font-display font-semibold text-sm shrink-0">
-                    {user.name[0]}
+                    {name[0]}
                 </div>
                 <div>
-                    <div className="text-[13.5px] font-medium">{user.name}</div>
-                    <div className="text-[11.5px] text-bone/50">{user.role}</div>
+                    <div className="text-[13.5px] font-medium">{name}</div>
+                    <div className="text-[11.5px] text-bone/50">{role}</div>
                 </div>
             </div>
         </aside>
