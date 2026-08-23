@@ -1,11 +1,19 @@
 import express from "express";
 import dotenv from "dotenv";
+import { setDefaultResultOrder } from "node:dns";
+import https from "node:https";
 import connectDB from "./config/db.js";
 import session from "express-session"
 import authRoutes from "./routes/auth.routes.js"
 import cors from "cors"
 
 dotenv.config();
+
+// prefer IPv4 for outbound requests: the local network announces IPv6 routes
+// to Google that black-hole (ETIMEDOUT), breaking the OAuth token exchange.
+// Pinning the global HTTPS agent forces every outbound call onto IPv4.
+setDefaultResultOrder("ipv4first");
+https.globalAgent.options.family = 4;
 
 
 // middleware
