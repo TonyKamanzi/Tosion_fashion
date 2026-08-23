@@ -1,55 +1,91 @@
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
 
+type CategoryItem = {
+    label: string;
+    slug: string;
+    eyebrow: string;
+    imageUrl: string;
+    imageAlt: string;
+    enabled: boolean;
+};
 
-const categories = [
+// shown if the backend is unreachable — mirrors the seeded defaults
+const FALLBACK_CATEGORIES: CategoryItem[] = [
     {
-        href: "/shop/outerwear",
-        src: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=900&q=85",
-        alt: "Woman wearing a structured coat",
-        eyebrow: "01 — Layers",
         label: "Outerwear",
+        slug: "outerwear",
+        eyebrow: "01 — Layers",
+        imageUrl:
+            "https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=900&q=85",
+        imageAlt: "Woman wearing a structured coat",
+        enabled: true,
     },
     {
-        href: "/shop/knitwear",
-        src: "https://images.unsplash.com/photo-1687275167528-5aac76c3e782?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        alt: "Woman wearing a knit sweater",
-        eyebrow: "02 — Softwear",
         label: "Knitwear",
+        slug: "knitwear",
+        eyebrow: "02 — Softwear",
+        imageUrl:
+            "https://images.unsplash.com/photo-1687275167528-5aac76c3e782?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        imageAlt: "Woman wearing a knit sweater",
+        enabled: true,
     },
     {
-        href: "/shop/accessories",
-        src: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=900&q=85",
-        alt: "Fashion accessories and jewelry",
-        eyebrow: "03 — Details",
         label: "Accessories",
+        slug: "accessories",
+        eyebrow: "03 — Details",
+        imageUrl:
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=900&q=85",
+        imageAlt: "Fashion accessories and jewelry",
+        enabled: true,
     },
     {
-        href: "/shop/tops",
-        src: "https://images.unsplash.com/photo-1651383740069-6be2f8e74d87?q=80&w=710&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        alt: "Woman wearing a white blouse",
-        eyebrow: "04 — Essentials",
         label: "Tops",
-    }, 
-    {
-        href: "/shop/dresses",
-        src: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=900&q=85",
-        alt: "Woman wearing an elegant dress",
-        eyebrow: "05 — Silhouettes",
-        label: "Dresses",
+        slug: "tops",
+        eyebrow: "04 — Essentials",
+        imageUrl:
+            "https://images.unsplash.com/photo-1651383740069-6be2f8e74d87?q=80&w=710&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        imageAlt: "Woman wearing a white blouse",
+        enabled: true,
     },
     {
-        href: "/shop/bottoms",
-        src: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=900&q=85",
-        alt: "Woman wearing wide-leg trousers",
-        eyebrow: "06 — Foundations",
+        label: "Dresses",
+        slug: "dresses",
+        eyebrow: "05 — Silhouettes",
+        imageUrl:
+            "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=900&q=85",
+        imageAlt: "Woman wearing an elegant dress",
+        enabled: true,
+    },
+    {
         label: "Bottoms",
+        slug: "bottoms",
+        eyebrow: "06 — Foundations",
+        imageUrl:
+            "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=900&q=85",
+        imageAlt: "Woman wearing wide-leg trousers",
+        enabled: true,
     },
 ];
 
-export default function Category() {
+async function getCategories(): Promise<CategoryItem[]> {
+    try {
+        const res = await axios.get<CategoryItem[]>("http://localhost:2000/categories", {
+            timeout: 4000,
+        });
+        return res.data;
+    } catch {
+        return FALLBACK_CATEGORIES;
+    }
+}
 
-    
+export default async function Category() {
+    const categories = (await getCategories()).filter((cat) => cat.enabled);
+
+    // nothing to show when every category is hidden
+    if (categories.length === 0) return null;
+
     return (
         <div>
             <div className="px-[5vw] pt-27.5 pb-0.5 bg-bone-2">
@@ -64,16 +100,16 @@ export default function Category() {
                 </div>
             </div>
 
-            <div className="grid gap-0.5 grid-cols-1 min-[900px]:grid-cols-[1.3fr_1fr_1fr] min-[900px]:h-[70vh] min-[900px]:min-h-130">
+            <div className="grid gap-0.5 grid-cols-1 min-[900px]:grid-cols-[1.3fr_1fr_1fr]">
                 {categories.map((cat) => (
                     <Link
-                        key={cat.label}
-                        href={cat.href}
-                        className="group relative overflow-hidden bg-ink h-70 min-[900px]:h-auto"
+                        key={cat.slug}
+                        href={`/shop/${cat.slug}`}
+                        className="group relative overflow-hidden bg-ink h-70 min-[900px]:h-[35vh] min-[900px]:min-h-[260px]"
                     >
                         <Image
-                            src={cat.src}
-                            alt={cat.alt}
+                            src={cat.imageUrl}
+                            alt={cat.imageAlt}
                             fill
                             sizes="(min-width: 900px) 33vw, 100vw"
                             className="object-cover grayscale-20 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.08]"
