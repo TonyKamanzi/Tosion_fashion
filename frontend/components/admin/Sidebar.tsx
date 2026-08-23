@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { useAdminSession } from "./AdminSessionContext";
 
 type NavItem = {
     label: string;
@@ -74,21 +75,12 @@ const navGroups: { label: string; items: NavItem[] }[] = [
     },
 ];
 
-const user = { name: "Amara Diallo", role: "Store Admin" };
-
-type SidebarProps = {
-    user?: {
-        firstName: string;
-        lastName: string;
-        role: string;
-    };
-};
-
-export default function Sidebar({ user: sessionUser }: SidebarProps) {
+export default function Sidebar() {
     const pathname = usePathname();
+    const sessionUser = useAdminSession();
 
-    const name = sessionUser ? `${sessionUser.firstName} ${sessionUser.lastName}` : user.name;
-    const role = sessionUser ? (sessionUser.role === "admin" ? "Store Admin" : sessionUser.role) : user.role;
+    const name = `${sessionUser.firstName} ${sessionUser.lastName}`;
+    const role = sessionUser.role === "admin" ? "Store Admin" : sessionUser.role;
 
     return (
         <aside className="hidden min-[800px]:flex flex-col sticky top-0 h-screen bg-ink text-bone px-5 py-6.5">
