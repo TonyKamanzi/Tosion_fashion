@@ -2,6 +2,7 @@ import Topbar from "@/components/admin/Topbar";
 import StatCards from "@/components/admin/StatCards";
 import RevenueChart from "@/components/admin/RevenueChart";
 import TopProducts from "@/components/admin/TopProducts";
+import OrdersTable from "@/components/admin/OrdersTable";
 
 export default function AdminPage() {
     return (
@@ -12,6 +13,7 @@ export default function AdminPage() {
                 <RevenueChart />
                 <TopProducts />
             </div>
+            <OrdersTable />
         </div>
     );
 }
