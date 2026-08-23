@@ -9,6 +9,15 @@ import { useRouter } from "next/navigation";
 // Which form is currently visible: "login" (Sign In) or "register" (Create Account)
 type Tab = "login" | "register";
 
+// shape returned by POST /auth/login and GET /auth/me
+type SessionUser = {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+};
+
 
 export default function Auth() {
     // tab state controls which panel is shown; starts on the login form
@@ -50,14 +59,14 @@ export default function Auth() {
         e.preventDefault();
 
         try {
-            await axios.post(
+            const res = await axios.post<SessionUser>(
                 "http://localhost:2000/auth/login",
                 { email: loginEmail, password: loginPassword },
                 { withCredentials: true }
             );
 
-            // logged in — go to the home page
-            router.push("/");
+            // admins go to the dashboard; customers go to the shop
+            router.replace(res.data.role === "admin" ? "/admin" : "/");
         } catch {
             setNotice("Invalid email or password.");
         }

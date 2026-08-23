@@ -278,11 +278,13 @@ export const googleCallback = async (
     // Reuse your existing Express session
     req.session.user = toSafeUser(user);
 
-    // Redirect back to Next.js
+    // Redirect back to Next.js: admins to the dashboard, customers to the shop
     console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+    const redirectTo = user.role === "admin" ? "/admin" : "/";
+
     res.redirect(
       
-      `${process.env.FRONTEND_URL}/account`
+      `${process.env.FRONTEND_URL}${redirectTo}`
     );
     } catch (error) {
   console.error("Google authentication error:", error);
