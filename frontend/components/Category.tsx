@@ -69,6 +69,13 @@ const FALLBACK_CATEGORIES: CategoryItem[] = [
     },
 ];
 
+// shown if the backend is unreachable — mirrors the seeded singleton
+const FALLBACK_HEADER = {
+    title: "Shop by category",
+    description:
+        "Three edits, one wardrobe. Built around what you'll actually reach for.",
+};
+
 async function getCategories(): Promise<CategoryItem[]> {
     try {
         const res = await axios.get<CategoryItem[]>("http://localhost:2000/categories", {
@@ -80,8 +87,21 @@ async function getCategories(): Promise<CategoryItem[]> {
     }
 }
 
+async function getHeader(): Promise<{ title: string; description: string }> {
+    try {
+        const res = await axios.get<{
+            title: string;
+            description: string;
+        }>("http://localhost:2000/categories/header", { timeout: 4000 });
+        return res.data;
+    } catch {
+        return FALLBACK_HEADER;
+    }
+}
+
 export default async function Category() {
-    const categories = (await getCategories()).filter((cat) => cat.enabled);
+    const [fetched, header] = await Promise.all([getCategories(), getHeader()]);
+    const categories = fetched.filter((cat) => cat.enabled);
 
     // nothing to show when every category is hidden
     if (categories.length === 0) return null;
@@ -91,11 +111,10 @@ export default async function Category() {
             <div className="px-[5vw] pt-27.5 pb-0.5 bg-bone-2">
                 <div className="flex justify-between items-end mb-13 gap-5 flex-wrap">
                     <h2 className="font-display font-medium text-[clamp(30px,3.4vw,46px)] leading-[1.05] tracking-[-0.01em]">
-                        Shop by category
+                        {header.title}
                     </h2>
                     <p className="max-w-[38ch] text-sage text-[14px] leading-[1.6]">
-                        Three edits, one wardrobe. Built around what you&apos;ll actually
-                        reach for.
+                        {header.description}
                     </p>
                 </div>
             </div>

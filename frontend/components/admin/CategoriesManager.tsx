@@ -22,6 +22,11 @@ type Draft = {
     imageAlt: string;
 };
 
+type SectionHeader = {
+    title: string;
+    description: string;
+};
+
 const EMPTY_NEW: Draft = { label: "", eyebrow: "", imageUrl: "", imageAlt: "" };
 
 const labelClass = "block font-mono text-[10px] tracking-[0.14em] uppercase text-sage mb-2";
@@ -41,17 +46,29 @@ function draftOf(item: CategoryRow): Draft {
 
 export default function CategoriesManager() {
     const [items, setItems] = useState<CategoryRow[]>([]);
+    const [header, setHeader] = useState<SectionHeader | null>(null);
+    const [headerDraft, setHeaderDraft] = useState<SectionHeader>({ title: "", description: "" });
     const [loading, setLoading] = useState(true);
     const [notice, setNotice] = useState("");
     const [drafts, setDrafts] = useState<Record<string, Draft>>({});
     const [busyId, setBusyId] = useState<string | null>(null);
+    const [savingHeader, setSavingHeader] = useState(false);
     const [newForm, setNewForm] = useState<Draft>(EMPTY_NEW);
     const [adding, setAdding] = useState(false);
 
     useEffect(() => {
-        axios
-            .get<CategoryRow[]>(API, { timeout: 5000 })
-            .then((res) => setItems(res.data))
+        Promise.all([
+            axios.get<CategoryRow[]>(API, { timeout: 5000 }),
+            axios.get<SectionHeader>("http://localhost:2000/categories/header", { timeout: 5000 }),
+        ])
+            .then(([itemsRes, headerRes]) => {
+                setItems(itemsRes.data);
+                setHeader(headerRes.data);
+                setHeaderDraft({
+                    title: headerRes.data.title,
+                    description: headerRes.data.description,
+                });
+            })
             .catch(() => setNotice("Could not load categories."))
             .finally(() => setLoading(false));
     }, []);
@@ -191,6 +208,32 @@ export default function CategoriesManager() {
         }
     };
 
+    const headerDirty =
+        header !== null &&
+        (headerDraft.title !== header.title ||
+            headerDraft.description !== header.description);
+
+    const handleSaveHeader = async () => {
+        if (!headerDirty || savingHeader) return;
+
+        setSavingHeader(true);
+        setNotice("");
+
+        try {
+            const res = await axios.put<SectionHeader>(
+                "http://localhost:2000/categories/header",
+                headerDraft,
+                { withCredentials: true }
+            );
+            setHeader(res.data);
+            setNotice("Section header saved.");
+        } catch {
+            setNotice("Header save failed. Make sure you are signed in as an admin.");
+        } finally {
+            setSavingHeader(false);
+        }
+    };
+
     const iconBtn =
         "shrink-0 w-9 h-9 border flex items-center justify-center transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 
@@ -209,6 +252,58 @@ export default function CategoriesManager() {
                     <p className="text-sm text-sage">Loading…</p>
                 ) : (
                     <div className="flex flex-col gap-4 mb-8">
+                        {/* section header editor */}
+                        {header && (
+                            <div className="border border-ink/15 bg-white p-5">
+                                <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-gold mb-4">
+                                    Section header
+                                </p>
+                                <div className="grid grid-cols-1 min-[1100px]:grid-cols-2 gap-x-4 gap-y-3.5">
+                                    <div>
+                                        <label className={labelClass}>Title</label>
+                                        <input
+                                            type="text"
+                                            value={headerDraft.title}
+                                            onChange={(e) =>
+                                                setHeaderDraft({ ...headerDraft, title: e.target.value })
+                                            }
+                                            placeholder="Shop by category"
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Blurb</label>
+                                        <input
+                                            type="text"
+                                            value={headerDraft.description}
+                                            onChange={(e) =>
+                                                setHeaderDraft({
+                                                    ...headerDraft,
+                                                    description: e.target.value,
+                                                })
+                                            }
+                                            placeholder="Three edits, one wardrobe…"
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="mt-4 flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={handleSaveHeader}
+                                        disabled={!headerDirty || savingHeader}
+                                        className="bg-ink text-bone py-2.5 px-5 text-[13px] font-medium tracking-[0.02em] transition-colors hover:bg-wine disabled:bg-ink/20 disabled:cursor-not-allowed cursor-pointer"
+                                    >
+                                        {savingHeader
+                                            ? "Saving…"
+                                            : headerDirty
+                                                ? "Save header"
+                                                : "Saved"}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         {items.map((item, index) => {
                             const draft = drafts[item._id] ?? draftOf(item);
                             const dirty = isDirty(item);

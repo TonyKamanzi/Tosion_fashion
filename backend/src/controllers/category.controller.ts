@@ -1,5 +1,9 @@
 import type { Request, Response } from "express";
 import Category, { DEFAULT_CATEGORIES } from "../models/category.model.js";
+import CategoryHeader from "../models/category-header.model.js";
+
+// text fields the admin is allowed to set via PUT /categories/header
+const HEADER_EDITABLE_FIELDS = ["title", "description"] as const;
 
 // "Winter Knits" -> "winter-knits"
 const slugify = (value: string) =>
@@ -159,6 +163,62 @@ export const updateCategory = async (req: Request, res: Response) => {
 
     res.status(500).json({
       message: "Failed to update category",
+    });
+  }
+};
+
+// ==========================
+// GET CATEGORY HEADER (public)
+// ==========================
+
+export const getCategoryHeader = async (_req: Request, res: Response) => {
+  try {
+    let header = await CategoryHeader.findOne();
+
+    // first call seeds the singleton so the storefront always has content
+    if (!header) {
+      header = await CategoryHeader.create({});
+    }
+
+    res.status(200).json(header);
+  } catch (error) {
+    console.error("Get category header error:", error);
+
+    res.status(500).json({
+      message: "Failed to load category header",
+    });
+  }
+};
+
+// ==========================
+// UPDATE CATEGORY HEADER (admin)
+// ==========================
+
+export const updateCategoryHeader = async (req: Request, res: Response) => {
+  try {
+    const updates: Record<string, unknown> = req.body ?? {};
+
+    let header = await CategoryHeader.findOne();
+    if (!header) {
+      header = await CategoryHeader.create({});
+    }
+
+    for (const field of HEADER_EDITABLE_FIELDS) {
+      const value = updates[field];
+
+      if (typeof value === "string") {
+        header.set(field, value.trim());
+      }
+    }
+
+    await header.save();
+
+    res.status(200).json(header);
+  } catch (error) {
+    console.error("Update category header error:", error);
+
+    res.status(500).json({
+      message: "Failed to update category header",
     });
   }
 };
