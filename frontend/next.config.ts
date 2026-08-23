@@ -3,11 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "picsum.photos" },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
+      // hero/advert images are admin-provided URLs, so allow any secure host
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "localhost" },
     ],
   },
 };
