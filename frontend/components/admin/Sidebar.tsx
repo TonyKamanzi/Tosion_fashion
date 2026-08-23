@@ -120,7 +120,7 @@ export default function Sidebar() {
     return (
         <aside className="hidden min-[800px]:flex flex-col sticky top-0 h-screen bg-ink text-bone px-5 py-6.5">
             <div className="font-display font-semibold text-[22px] pt-1.5 px-2 pb-6.5 border-b border-bone/10 mb-5.5">
-                MAISON <span className="text-gold">admin</span>
+                TOSION <span className="text-gold">admin</span>
             </div>
 
             {navGroups.map((group) => (
