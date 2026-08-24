@@ -31,6 +31,12 @@ export type PriceKey = (typeof PRICE_RANGES)[number]["key"];
 type ShopSidebarProps = {
     counts: CategoryCount[];
     currentSlug: string; // "all" on /shop
+    // line mode ("women"|"men"): Category checkboxes filter instead of navigate
+    lockedDepartment?: string;
+    slugOptions: CategoryCount[];
+    selectedSlugs: string[];
+    onToggleSlug: (slug: string) => void;
+    onClearSlugs: () => void;
     sizeOptions: SizeOption[];
     colorOptions: ColorOption[];
     selectedSizes: string[];
@@ -84,6 +90,11 @@ function FilterGroup({
 export default function ShopSidebar({
     counts,
     currentSlug,
+    lockedDepartment,
+    slugOptions,
+    selectedSlugs,
+    onToggleSlug,
+    onClearSlugs,
     sizeOptions,
     colorOptions,
     selectedSizes,
@@ -111,43 +122,79 @@ export default function ShopSidebar({
     return (
         <aside className="hidden min-[900px]:block border-r border-ink/15 pr-10">
             <FilterGroup
-                title="Category"
+                title={lockedDepartment ? "Type" : "Category"}
                 collapsed={catCollapsed}
                 onToggle={() => setCatCollapsed((v) => !v)}
             >
-                <div className="flex flex-col gap-3">
-                    <label className="flex items-center justify-between text-[13.5px] cursor-pointer">
-                        <span className="flex items-center gap-2.5">
-                            <input
-                                type="checkbox"
-                                className="w-3.5 h-3.5 accent-wine"
-                                checked={currentSlug === "all"}
-                                onChange={() => go("all")}
-                            />
-                            All pieces
-                        </span>
-                        <span className="text-sage font-mono text-[11px]">
-                            {counts.reduce((sum, c) => sum + c.count, 0)}
-                        </span>
-                    </label>
-                    {counts.map((cat) => (
-                        <label
-                            key={cat.slug}
-                            className="flex items-center justify-between text-[13.5px] cursor-pointer"
-                        >
+                {lockedDepartment ? (
+                    <div className="flex flex-col gap-3">
+                        <label className="flex items-center justify-between text-[13.5px] cursor-pointer">
                             <span className="flex items-center gap-2.5">
                                 <input
                                     type="checkbox"
                                     className="w-3.5 h-3.5 accent-wine"
-                                    checked={currentSlug === cat.slug}
-                                    onChange={() => go(cat.slug)}
+                                    checked={selectedSlugs.length === 0}
+                                    onChange={onClearSlugs}
                                 />
-                                {cat.label}
+                                All pieces
                             </span>
-                            <span className="text-sage font-mono text-[11px]">{cat.count}</span>
+                            <span className="text-sage font-mono text-[11px]">
+                                {slugOptions.reduce((sum, c) => sum + c.count, 0)}
+                            </span>
                         </label>
-                    ))}
-                </div>
+                        {slugOptions.map((cat) => (
+                            <label
+                                key={cat.slug}
+                                className="flex items-center justify-between text-[13.5px] cursor-pointer"
+                            >
+                                <span className="flex items-center gap-2.5">
+                                    <input
+                                        type="checkbox"
+                                        className="w-3.5 h-3.5 accent-wine"
+                                        checked={selectedSlugs.includes(cat.slug)}
+                                        onChange={() => onToggleSlug(cat.slug)}
+                                    />
+                                    {cat.label}
+                                </span>
+                                <span className="text-sage font-mono text-[11px]">{cat.count}</span>
+                            </label>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col gap-3">
+                        <label className="flex items-center justify-between text-[13.5px] cursor-pointer">
+                            <span className="flex items-center gap-2.5">
+                                <input
+                                    type="checkbox"
+                                    className="w-3.5 h-3.5 accent-wine"
+                                    checked={currentSlug === "all"}
+                                    onChange={() => go("all")}
+                                />
+                                All pieces
+                            </span>
+                            <span className="text-sage font-mono text-[11px]">
+                                {counts.reduce((sum, c) => sum + c.count, 0)}
+                            </span>
+                        </label>
+                        {counts.map((cat) => (
+                            <label
+                                key={cat.slug}
+                                className="flex items-center justify-between text-[13.5px] cursor-pointer"
+                            >
+                                <span className="flex items-center gap-2.5">
+                                    <input
+                                        type="checkbox"
+                                        className="w-3.5 h-3.5 accent-wine"
+                                        checked={currentSlug === cat.slug}
+                                        onChange={() => go(cat.slug)}
+                                    />
+                                    {cat.label}
+                                </span>
+                                <span className="text-sage font-mono text-[11px]">{cat.count}</span>
+                            </label>
+                        ))}
+                    </div>
+                )}
             </FilterGroup>
 
             {sizeOptions.length > 0 && (

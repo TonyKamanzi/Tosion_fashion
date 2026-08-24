@@ -14,6 +14,8 @@ export type ShopProduct = {
     tag: string;
     sizes: string[];
     colors: { name: string; hex: string }[];
+    department: string;
+    category: { _id: string; label: string; slug: string } | null;
 };
 
 type ProductCardProps = {

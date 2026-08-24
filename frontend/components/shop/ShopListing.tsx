@@ -25,19 +25,42 @@ type ShopListingProps = {
     products: ShopProduct[];
     counts: CategoryCount[];
     currentSlug: string; // "all" on /shop, else the category slug
+    // when set ("women"|"men") the listing stays inside the line and the
+    // sidebar Category checkboxes become client-side filters
+    lockedDepartment?: string;
 };
 
 function toggleValue(list: string[], value: string) {
     return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
-export default function ShopListing({ products, counts, currentSlug }: ShopListingProps) {
+export default function ShopListing({
+    products,
+    counts,
+    currentSlug,
+    lockedDepartment,
+}: ShopListingProps) {
     const [sort, setSort] = useState<SortKey>("newest");
     const [view, setView] = useState<"grid" | "list">("grid");
     const [page, setPage] = useState(1);
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
     const [selectedHexes, setSelectedHexes] = useState<string[]>([]);
     const [selectedPrices, setSelectedPrices] = useState<PriceKey[]>([]);
+    const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
+
+    // within a line: type-category options derived from what's loaded
+    const slugOptions = useMemo(() => {
+        if (!lockedDepartment) return [];
+        const bySlug = new Map<string, { slug: string; label: string; count: number }>();
+        for (const product of products) {
+            const cat = product.category;
+            if (!cat || !cat.slug) continue;
+            const existing = bySlug.get(cat.slug);
+            if (existing) existing.count += 1;
+            else bySlug.set(cat.slug, { slug: cat.slug, label: cat.label, count: 1 });
+        }
+        return [...bySlug.values()].sort((a, b) => a.label.localeCompare(b.label));
+    }, [products, lockedDepartment]);
 
     // filter option lists derived from what's actually in this category
     const sizeOptions: SizeOption[] = useMemo(() => {
@@ -73,11 +96,19 @@ export default function ShopListing({ products, counts, currentSlug }: ShopListi
     }, [products]);
 
     const filtersActive =
-        selectedSizes.length > 0 || selectedHexes.length > 0 || selectedPrices.length > 0;
+        selectedSizes.length > 0 ||
+        selectedHexes.length > 0 ||
+        selectedPrices.length > 0 ||
+        selectedSlugs.length > 0;
 
     const visible = useMemo(() => {
         let list = products;
 
+        if (selectedSlugs.length > 0) {
+            list = list.filter(
+                (p) => p.category && selectedSlugs.includes(p.category.slug),
+            );
+        }
         if (selectedSizes.length > 0) {
             list = list.filter((p) => p.sizes.some((s) => selectedSizes.includes(s)));
         }
@@ -101,7 +132,7 @@ export default function ShopListing({ products, counts, currentSlug }: ShopListi
         }
 
         return sorted;
-    }, [products, selectedSizes, selectedHexes, selectedPrices, sort]);
+    }, [products, selectedSlugs, selectedSizes, selectedHexes, selectedPrices, sort]);
 
     const pages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
     const safePage = Math.min(page, pages);
@@ -130,10 +161,16 @@ export default function ShopListing({ products, counts, currentSlug }: ShopListi
         resetPage();
     };
 
+    const toggleSlug = (slug: string) => {
+        setSelectedSlugs((prev) => toggleValue(prev, slug));
+        resetPage();
+    };
+
     const clearFilters = () => {
         setSelectedSizes([]);
         setSelectedHexes([]);
         setSelectedPrices([]);
+        setSelectedSlugs([]);
         resetPage();
     };
 
@@ -142,6 +179,14 @@ export default function ShopListing({ products, counts, currentSlug }: ShopListi
             <ShopSidebar
                 counts={counts}
                 currentSlug={currentSlug}
+                lockedDepartment={lockedDepartment}
+                slugOptions={slugOptions}
+                selectedSlugs={selectedSlugs}
+                onToggleSlug={toggleSlug}
+                onClearSlugs={() => {
+                    setSelectedSlugs([]);
+                    resetPage();
+                }}
                 sizeOptions={sizeOptions}
                 colorOptions={colorOptions}
                 selectedSizes={selectedSizes}
