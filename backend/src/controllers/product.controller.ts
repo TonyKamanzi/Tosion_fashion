@@ -5,6 +5,16 @@ import Category from "../models/category.model.js";
 
 const PAGE_LIMIT = 9;
 
+// product lines — required on every product
+const DEPARTMENTS = ["women", "men"] as const;
+type Department = (typeof DEPARTMENTS)[number];
+
+function toDepartment(value: unknown): Department | null {
+  return typeof value === "string" && (DEPARTMENTS as readonly string[]).includes(value)
+    ? (value as Department)
+    : null;
+}
+
 // sort keys accepted on GET /products
 const SORT_OPTIONS: Record<string, Record<string, 1 | -1>> = {
   newest: { createdAt: -1 },
@@ -101,7 +111,14 @@ export const getProducts = async (req: Request, res: Response) => {
       categoryFilter = { category: category._id };
     }
 
-    const filter = { enabled: true, ...categoryFilter };
+    // optional line filter, combinable with category
+    const department = toDepartment(req.query.department);
+    const departmentFilter: Record<string, unknown> = {};
+    if (department) {
+      departmentFilter.department = department;
+    }
+
+    const filter = { enabled: true, ...categoryFilter, ...departmentFilter };
     const total = await Product.countDocuments(filter);
     const pages = Math.max(1, Math.ceil(total / limit));
     const safePage = Math.min(page, pages);
@@ -198,6 +215,11 @@ export const createProduct = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "An existing category is required" });
     }
 
+    const department = toDepartment(body.department);
+    if (!department) {
+      return res.status(400).json({ message: "A line is required — women or men" });
+    }
+
     const compareAtPrice = body.compareAtPrice === "" || body.compareAtPrice === null
       ? null
       : toPrice(body.compareAtPrice);
@@ -214,6 +236,7 @@ export const createProduct = async (req: Request, res: Response) => {
       sizes: sanitizeSizes(body.sizes),
       colors: sanitizeColors(body.colors),
       category: category._id,
+      department,
       enabled: body.enabled !== false,
     });
 
@@ -269,6 +292,14 @@ export const updateProduct = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Category not found" });
       }
       product.set("category", category._id);
+    }
+
+    if (body.department !== undefined) {
+      const department = toDepartment(body.department);
+      if (!department) {
+        return res.status(400).json({ message: "Invalid line — use women or men" });
+      }
+      product.set("department", department);
     }
 
     if (Array.isArray(body.sizes)) product.set("sizes", sanitizeSizes(body.sizes));

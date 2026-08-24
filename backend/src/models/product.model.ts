@@ -76,11 +76,18 @@ const productSchema = new mongoose.Schema(
       default: [],
     },
 
-    // ties the product to the same categories used by the navbar-free
-    // shop sidebar and the homepage category section
+    // ties the product to the same categories used by the shop sidebar and
+    // the homepage category section
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
+      required: true,
+    },
+
+    // required line: powers the navbar Women / Men listings
+    department: {
+      type: String,
+      enum: ["women", "men"],
       required: true,
     },
 
