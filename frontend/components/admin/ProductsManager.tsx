@@ -25,6 +25,7 @@ type AdminProduct = {
     sizes: string[];
     colors: { name: string; hex: string }[];
     category: CategoryOption | null;
+    department: string;
     enabled: boolean;
 };
 
@@ -40,6 +41,7 @@ type ProductDraft = {
     sizesText: string; // comma-separated
     colors: { name: string; hex: string }[];
     categoryId: string;
+    department: string;
     enabled: boolean;
 };
 
@@ -55,6 +57,7 @@ const EMPTY_DRAFT: ProductDraft = {
     sizesText: "",
     colors: [],
     categoryId: "",
+    department: "",
     enabled: true,
 };
 
@@ -125,6 +128,7 @@ export default function ProductsManager() {
             sizesText: item.sizes.join(", "),
             colors: item.colors.map((c) => ({ ...c })),
             categoryId: item.category?._id ?? "",
+            department: item.department ?? "",
             enabled: item.enabled,
         });
         setNotice("");
@@ -146,6 +150,7 @@ export default function ProductsManager() {
             .filter(Boolean),
         colors: draft.colors.filter((c) => c.hex),
         category: draft.categoryId,
+        department: draft.department,
         enabled: draft.enabled,
     });
 
@@ -159,6 +164,7 @@ export default function ProductsManager() {
         )
             return "Was-price must be a number.";
         if (!draft.categoryId) return "Pick a category.";
+        if (!draft.department) return "Pick a line — Women or Men.";
         return null;
     };
 
@@ -262,7 +268,7 @@ export default function ProductsManager() {
                     </p>
 
                     <div className="grid grid-cols-1 min-[1100px]:grid-cols-2 gap-x-4 gap-y-3.5">
-                        <div>
+                        <div className="min-[1100px]:col-span-2">
                             <label className={labelClass}>Name</label>
                             <input
                                 type="text"
@@ -271,6 +277,18 @@ export default function ProductsManager() {
                                 placeholder="Wool Overcoat"
                                 className={inputClass}
                             />
+                        </div>
+                        <div>
+                            <label className={labelClass}>Line</label>
+                            <select
+                                value={draft.department}
+                                onChange={(e) => set("department", e.target.value)}
+                                className={`${inputClass} cursor-pointer`}
+                            >
+                                <option value="">Women or men…</option>
+                                <option value="women">Women</option>
+                                <option value="men">Men</option>
+                            </select>
                         </div>
                         <div>
                             <label className={labelClass}>Category</label>
@@ -520,6 +538,12 @@ export default function ProductsManager() {
                                             )}
                                         </span>
                                         <span className="block font-mono text-[11px] tracking-[0.06em] text-sage mt-1">
+                                            {item.department
+                                                ? item.department === "women"
+                                                    ? "Women"
+                                                    : "Men"
+                                                : "— no line"}
+                                            {" · "}
                                             {item.category?.label ?? "— no category"} ·{" "}
                                             {money(item.price)}
                                             {item.compareAtPrice !== null &&
