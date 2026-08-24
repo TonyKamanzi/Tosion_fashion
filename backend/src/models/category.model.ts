@@ -79,6 +79,12 @@ const categorySchema = new mongoose.Schema(
       default: "",
     },
 
+    // intro copy shown on the shop listing page head
+    description: {
+      type: String,
+      default: "",
+    },
+
     imageUrl: {
       type: String,
       default: "",

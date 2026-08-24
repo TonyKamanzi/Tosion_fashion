@@ -79,6 +79,7 @@ export const createCategory = async (req: Request, res: Response) => {
       label,
       slug,
       eyebrow: typeof body.eyebrow === "string" ? body.eyebrow.trim() : "",
+      description: typeof body.description === "string" ? body.description.trim() : "",
       imageUrl: typeof body.imageUrl === "string" ? body.imageUrl.trim() : "",
       imageAlt: typeof body.imageAlt === "string" ? body.imageAlt.trim() : "",
       enabled: body.enabled !== false,
@@ -148,6 +149,7 @@ export const updateCategory = async (req: Request, res: Response) => {
     }
 
     if (typeof updates.eyebrow === "string") category.set("eyebrow", updates.eyebrow.trim());
+    if (typeof updates.description === "string") category.set("description", updates.description.trim());
     if (typeof updates.imageUrl === "string") category.set("imageUrl", updates.imageUrl.trim());
     if (typeof updates.imageAlt === "string") category.set("imageAlt", updates.imageAlt.trim());
     if (typeof updates.enabled === "boolean") category.set("enabled", updates.enabled);

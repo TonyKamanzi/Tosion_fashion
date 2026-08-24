@@ -9,6 +9,7 @@ type CategoryRow = {
     label: string;
     slug: string;
     eyebrow: string;
+    description?: string;
     imageUrl: string;
     imageAlt: string;
     order: number;
@@ -18,6 +19,7 @@ type CategoryRow = {
 type Draft = {
     label: string;
     eyebrow: string;
+    description: string;
     imageUrl: string;
     imageAlt: string;
 };
@@ -27,7 +29,7 @@ type SectionHeader = {
     description: string;
 };
 
-const EMPTY_NEW: Draft = { label: "", eyebrow: "", imageUrl: "", imageAlt: "" };
+const EMPTY_NEW: Draft = { label: "", eyebrow: "", description: "", imageUrl: "", imageAlt: "" };
 
 const labelClass = "block font-mono text-[10px] tracking-[0.14em] uppercase text-sage mb-2";
 const inputClass =
@@ -39,6 +41,7 @@ function draftOf(item: CategoryRow): Draft {
     return {
         label: item.label,
         eyebrow: item.eyebrow,
+        description: item.description ?? "",
         imageUrl: item.imageUrl,
         imageAlt: item.imageAlt,
     };
@@ -85,6 +88,7 @@ export default function CategoriesManager() {
         return (
             draft.label !== item.label ||
             draft.eyebrow !== item.eyebrow ||
+            draft.description !== (item.description ?? "") ||
             draft.imageUrl !== item.imageUrl ||
             draft.imageAlt !== item.imageAlt
         );
@@ -412,6 +416,16 @@ export default function CategoriesManager() {
                                             />
                                         </div>
                                         <div className="min-[1100px]:col-span-2">
+                                            <label className={labelClass}>Description</label>
+                                            <textarea
+                                                value={draft.description}
+                                                onChange={(e) => updateDraft(item._id, "description", e.target.value)}
+                                                rows={2}
+                                                placeholder="Intro copy shown on the shop page for this category…"
+                                                className={`${inputClass} resize-none`}
+                                            />
+                                        </div>
+                                        <div className="min-[1100px]:col-span-2">
                                             <label className={labelClass}>Image URL</label>
                                             <input
                                                 type="text"
@@ -473,6 +487,16 @@ export default function CategoriesManager() {
                                     onChange={(e) => setNewForm({ ...newForm, eyebrow: e.target.value })}
                                     placeholder="07 — Cold Days"
                                     className={inputClass}
+                                />
+                            </div>
+                            <div className="min-[1100px]:col-span-2">
+                                <label className={labelClass}>Description</label>
+                                <textarea
+                                    value={newForm.description}
+                                    onChange={(e) => setNewForm({ ...newForm, description: e.target.value })}
+                                    rows={2}
+                                    placeholder="Intro copy shown on the shop page for this category…"
+                                    className={`${inputClass} resize-none`}
                                 />
                             </div>
                             <div className="min-[1100px]:col-span-2">
