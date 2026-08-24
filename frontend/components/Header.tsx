@@ -7,10 +7,9 @@ import { useRouter } from "next/navigation";
 
 const links = [
     { href: "/shop", label: "New In" },
-    { href: "/women", label: "Women" },
-    { href: "/men", label: "Men" },
-    { href: "/assessories", label: "Accessories" },
-    { href: "/journal", label: "Journal" },
+    { href: "/shop/women", label: "Women" },
+    { href: "/shop/men", label: "Men" },
+    { href: "/shop/accessories", label: "Accessories" },
 ];
 
 // shape returned by GET /auth/me
