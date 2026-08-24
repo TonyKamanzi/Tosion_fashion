@@ -83,6 +83,14 @@ export const getProducts = async (req: Request, res: Response) => {
     const requestedPage = Number.parseInt(textOr(req.query.page, "1"), 10);
     const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 
+    // optional override so a listing page can pull the whole catalog at once;
+    // clamped to keep queries sane
+    const requestedLimit = Number.parseInt(textOr(req.query.limit, String(PAGE_LIMIT)), 10);
+    const limit =
+      Number.isFinite(requestedLimit) && requestedLimit > 0
+        ? Math.min(requestedLimit, 100)
+        : PAGE_LIMIT;
+
     // unknown slug → empty payload rather than an error
     let categoryFilter: Record<string, unknown> = {};
     if (catSlug !== "all") {
@@ -95,16 +103,16 @@ export const getProducts = async (req: Request, res: Response) => {
 
     const filter = { enabled: true, ...categoryFilter };
     const total = await Product.countDocuments(filter);
-    const pages = Math.max(1, Math.ceil(total / PAGE_LIMIT));
+    const pages = Math.max(1, Math.ceil(total / limit));
     const safePage = Math.min(page, pages);
 
     const items = await Product.find(filter)
       .sort(SORT_OPTIONS[sortKey])
-      .skip((safePage - 1) * PAGE_LIMIT)
-      .limit(PAGE_LIMIT)
+      .skip((safePage - 1) * limit)
+      .limit(limit)
       .populate("category", "label slug");
 
-    res.status(200).json({ items, total, page: safePage, pages, limit: PAGE_LIMIT });
+    res.status(200).json({ items, total, page: safePage, pages, limit });
   } catch (error) {
     console.error("Get products error:", error);
 

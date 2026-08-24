@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const links = [
-    { href: "/", label: "New In" },
+    { href: "/shop", label: "New In" },
     { href: "/women", label: "Women" },
     { href: "/men", label: "Men" },
     { href: "/assessories", label: "Accessories" },
