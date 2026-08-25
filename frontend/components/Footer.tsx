@@ -4,10 +4,10 @@ const columns = [
     {
         heading: "Shop",
         links: [
-            { href: "/newin", label: "New In" },
-            { href: "/women", label: "Women" },
-            { href: "/men", label: "Men" },
-            { href: "/sales", label: "Sale" },
+            { href: "/shop", label: "New In" },
+            { href: "/shop/women", label: "Women" },
+            { href: "/shop/men", label: "Men" },
+            { href: "/shop", label: "Sale" },
         ],
     },
     {
