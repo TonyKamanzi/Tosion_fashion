@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 export type ShopProduct = {
     _id: string;
     name: string;
+    slug: string;
     description: string;
     price: number;
     compareAtPrice: number | null;
@@ -32,8 +34,9 @@ export default function ProductCard({ product, view = "grid" }: ProductCardProps
     const hasAlt = Boolean(product.imageAltUrl);
 
     const media = (
-        <div
-            className={`relative overflow-hidden bg-bone-2 ${
+        <Link
+            href={`/product/${product.slug}`}
+            className={`block relative overflow-hidden bg-bone-2 ${
                 view === "grid" ? "aspect-3/4 mb-4" : "aspect-3/4 w-32 shrink-0 sm:w-40"
             }`}
         >
@@ -47,7 +50,8 @@ export default function ProductCard({ product, view = "grid" }: ProductCardProps
             <button
                 type="button"
                 aria-label="Add to wishlist"
-                className="absolute z-10 top-3 left-3 w-8 h-8 rounded-full bg-bone/90 flex items-center justify-center text-ink opacity-0 -translate-y-1 transition-all duration-250 group-hover:opacity-100 group-hover:translate-y-0 cursor-pointer hover:text-wine"
+                onClick={(e) => e.stopPropagation()}
+                className="absolute z-10 top-3 left-3 w-8 h-8 rounded-full bg-bone/90 flex items-center justify-center text-ink opacity-0 -translate-y-1 transition-all duration-250 group-hover:opacity-100 group-hover:translate-y-0 cursor-pointer hover:text-wine pointer-events-auto"
             >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>
             </button>
@@ -73,10 +77,10 @@ export default function ProductCard({ product, view = "grid" }: ProductCardProps
             )}
 
             {/* quick add — visual only until the cart exists */}
-            <div className="absolute left-3 right-3 bottom-3 bg-bone text-ink text-center py-3 font-mono text-[11px] tracking-[0.08em] uppercase opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+            <div className="absolute left-3 right-3 bottom-3 bg-bone text-ink text-center py-3 font-mono text-[11px] tracking-[0.08em] uppercase opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 pointer-events-none">
                 Quick add
             </div>
-        </div>
+        </Link>
     );
 
     const info = (
