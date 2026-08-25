@@ -47,11 +47,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
     if (!product) notFound();
 
-    // split name for italic last-word h1
-    const words = product.name.split(" ");
-    const lastWord = words.pop() ?? "";
-    const head = words.length > 0 ? `${words.join(" ")} ` : "";
-
     return (
         <div className="mt-20 bg-bone min-h-[calc(100vh-80px)]">
             {/* breadcrumb */}
