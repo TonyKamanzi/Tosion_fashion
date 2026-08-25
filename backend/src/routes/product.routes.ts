@@ -1,6 +1,8 @@
 import express from "express";
 import {
   getProducts,
+  getProductBySlug,
+  getRelatedProducts,
   getProductCounts,
   getAdminProducts,
   createProduct,
@@ -15,6 +17,10 @@ const router = express.Router();
 router.get("/", getProducts);
 router.get("/counts", getProductCounts);
 router.get("/admin/list", requireAdmin, getAdminProducts);
+
+// public single-product endpoints (specific slugs before any param routes)
+router.get("/related/:slug", getRelatedProducts);
+router.get("/:slug", getProductBySlug);
 
 // admin mutations
 router.post("/", requireAdmin, createProduct);

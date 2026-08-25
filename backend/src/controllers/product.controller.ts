@@ -140,6 +140,62 @@ export const getProducts = async (req: Request, res: Response) => {
 };
 
 // ==========================
+// GET SINGLE PRODUCT BY SLUG (public — enabled only)
+// ==========================
+
+export const getProductBySlug = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    if (!slug) {
+      return res.status(400).json({ message: "Slug is required" });
+    }
+
+    const product = await Product.findOne({ slug, enabled: true })
+      .populate("category", "label slug");
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    console.error("Get product by slug error:", error);
+    res.status(500).json({ message: "Failed to load product" });
+  }
+};
+
+// ==========================
+// RELATED PRODUCTS (public — same category, exclude current)
+// ==========================
+
+export const getRelatedProducts = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    if (!slug) {
+      return res.status(400).json({ message: "Slug is required" });
+    }
+
+    const current = await Product.findOne({ slug, enabled: true });
+    if (!current) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const related = await Product.find({
+      _id: { $ne: current._id },
+      category: current.category,
+      enabled: true,
+    })
+      .limit(4)
+      .populate("category", "label slug");
+
+    res.status(200).json(related);
+  } catch (error) {
+    console.error("Get related products error:", error);
+    res.status(500).json({ message: "Failed to load related products" });
+  }
+};
+
+// ==========================
 // PRODUCT COUNTS PER CATEGORY (public — feeds the shop sidebar)
 // returns every enabled category with its enabled-product count
 // ==========================
