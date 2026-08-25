@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 const colorSchema = new mongoose.Schema(
   {
     name: {
@@ -22,6 +29,13 @@ const productSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
+    },
+
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
       trim: true,
     },
 
@@ -100,6 +114,23 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+productSchema.pre("save", async function () {
+  if (!this.isModified("name") && this.get("slug")) return;
+
+  let candidate = slugify(this.get("name") as string);
+  if (!candidate) return;
+
+  const Product = mongoose.model("Product", productSchema);
+  let collision = await Product.findOne({ slug: candidate, _id: { $ne: this._id } });
+  let suffix = 2;
+  while (collision) {
+    collision = await Product.findOne({ slug: `${candidate}-${suffix}`, _id: { $ne: this._id } });
+    if (collision) suffix++;
+    else { candidate = `${candidate}-${suffix}`; break; }
+  }
+  this.set("slug", candidate);
+});
 
 const Product = mongoose.model("Product", productSchema);
 
