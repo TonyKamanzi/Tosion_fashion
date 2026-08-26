@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import axios from "axios";
 import { useCart } from "./CartContext";
 import { useWishlist } from "./WishlistContext";
 
@@ -20,6 +21,21 @@ export type ProductDoc = {
     colors: { name: string; hex: string }[];
     department: string;
     category: { _id: string; label: string; slug: string } | null;
+};
+
+type ReviewDoc = {
+    _id: string;
+    name: string;
+    rating: number;
+    title: string;
+    body: string;
+    createdAt: string;
+};
+
+type ReviewsResponse = {
+    items: ReviewDoc[];
+    averageRating: number;
+    reviewCount: number;
 };
 
 function formatPrice(value: number) {
@@ -46,6 +62,30 @@ export default function ProductDetail({ product }: Props) {
     const { addItem } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const saved = isInWishlist(product._id);
+
+    // reviews state
+    const [reviews, setReviews] = useState<ReviewDoc[]>([]);
+    const [averageRating, setAverageRating] = useState(0);
+    const [reviewCount, setReviewCount] = useState(0);
+    const [reviewForm, setReviewForm] = useState({ name: "", rating: 5, title: "", body: "" });
+    const [reviewSubmitting, setReviewSubmitting] = useState(false);
+    const [reviewMessage, setReviewMessage] = useState("");
+
+    const fetchReviews = useCallback(async () => {
+        try {
+            const { data } = await axios.get<ReviewsResponse>(
+                `http://localhost:2000/reviews/product/${product._id}`
+            );
+            setReviews(data.items);
+            setAverageRating(data.averageRating);
+            setReviewCount(data.reviewCount);
+        } catch { /* ignore */ }
+    }, [product._id]);
+
+    // fetch reviews on mount (async IIFE satisfies react-hooks/set-state-in-effect)
+    useEffect(() => {
+        void (async () => { await fetchReviews(); })();
+    }, [fetchReviews]);
 
     const toggleAccordion = (key: string) =>
         setOpenAccordions((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -142,10 +182,14 @@ export default function ProductDetail({ product }: Props) {
                     <em className="italic font-normal text-wine">{lastWord}</em>
                 </h1>
 
-                {/* star rating (visual only) */}
+                {/* star rating */}
                 <div className="flex items-center gap-2 mb-5.5">
-                    <span className="text-gold text-sm tracking-[2px]">★★★★★</span>
-                    <span className="text-[12.5px] text-sage font-mono">4.8 (126 reviews)</span>
+                    <span className="text-gold text-sm tracking-[2px]">
+                        {"★".repeat(Math.round(averageRating))}{"☆".repeat(5 - Math.round(averageRating))}
+                    </span>
+                    <span className="text-[12.5px] text-sage font-mono">
+                        {averageRating > 0 ? averageRating : "—"} ({reviewCount} review{reviewCount !== 1 ? "s" : ""})
+                    </span>
                 </div>
 
                 {/* price */}
@@ -406,7 +450,7 @@ export default function ProductDetail({ product }: Props) {
                             onClick={() => toggleAccordion("reviews")}
                             className="w-full flex justify-between items-center py-[18px] px-0.5 cursor-pointer text-[14px] font-medium bg-none border-none text-ink"
                         >
-                            Reviews (126)
+                            Reviews ({reviewCount})
                             <svg
                                 width="12"
                                 height="12"
@@ -420,12 +464,114 @@ export default function ProductDetail({ product }: Props) {
                             </svg>
                         </button>
                         <div
-                            className={`overflow-hidden transition-[max-height] duration-300 ${openAccordions.reviews ? "max-h-[260px]" : "max-h-0"}`}
+                            className={`overflow-hidden transition-[max-height] duration-300 ${openAccordions.reviews ? "max-h-[800px]" : "max-h-0"}`}
                         >
-                            <p className="px-0.5 pb-5 text-sage text-[13.5px] leading-[1.7]">
-                                &ldquo;Runs true to size and the quality is genuinely
-                                outstanding — worth the price.&rdquo; — Sofia M.
-                            </p>
+                            <div className="px-0.5 pb-5">
+                                {/* review list */}
+                                {reviews.length === 0 ? (
+                                    <p className="text-sage text-[13.5px] leading-[1.7] mb-5">
+                                        No reviews yet. Be the first to review this product.
+                                    </p>
+                                ) : (
+                                    <div className="flex flex-col gap-5 mb-6">
+                                        {reviews.map((r) => (
+                                            <div key={r._id} className="border-b border-ink/10 pb-4 last:border-b-0 last:pb-0">
+                                                <div className="flex items-center gap-2 mb-1.5">
+                                                    <span className="text-gold text-[13px] tracking-[1px]">
+                                                        {"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}
+                                                    </span>
+                                                    <span className="font-mono text-[11px] text-sage">
+                                                        {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                                                    </span>
+                                                </div>
+                                                {r.title && (
+                                                    <p className="font-medium text-[13.5px] mb-1">{r.title}</p>
+                                                )}
+                                                <p className="text-sage text-[13px] leading-[1.7] mb-1.5">{r.body}</p>
+                                                <span className="font-mono text-[11px] text-sage">— {r.name}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* write a review form */}
+                                <div className="border-t border-ink/10 pt-5">
+                                    <p className="font-medium text-[13.5px] mb-3">Write a review</p>
+                                    {reviewMessage && (
+                                        <p className={`font-mono text-[11px] mb-3 ${reviewMessage.startsWith("Thanks") ? "text-good" : "text-wine"}`}>
+                                            {reviewMessage}
+                                        </p>
+                                    )}
+                                    <form
+                                        onSubmit={async (e) => {
+                                            e.preventDefault();
+                                            setReviewSubmitting(true);
+                                            setReviewMessage("");
+                                            try {
+                                                await axios.post("http://localhost:2000/reviews", {
+                                                    product: product._id,
+                                                    name: reviewForm.name,
+                                                    rating: reviewForm.rating,
+                                                    title: reviewForm.title,
+                                                    body: reviewForm.body,
+                                                });
+                                                setReviewForm({ name: "", rating: 5, title: "", body: "" });
+                                                setReviewMessage("Thanks for your review!");
+                                                fetchReviews();
+                                            } catch {
+                                                setReviewMessage("Failed to submit review. Please try again.");
+                                            } finally {
+                                                setReviewSubmitting(false);
+                                            }
+                                        }}
+                                        className="flex flex-col gap-3"
+                                    >
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <input
+                                                type="text"
+                                                placeholder="Your name"
+                                                value={reviewForm.name}
+                                                onChange={(e) => setReviewForm((f) => ({ ...f, name: e.target.value }))}
+                                                required
+                                                className="border border-ink/14 bg-none py-2.5 px-3 font-sans text-[13px] text-ink placeholder:text-sage/60 outline-none focus:border-wine transition-colors"
+                                            />
+                                            <select
+                                                value={reviewForm.rating}
+                                                onChange={(e) => setReviewForm((f) => ({ ...f, rating: Number(e.target.value) }))}
+                                                className="border border-ink/14 bg-bone py-2.5 px-3 font-sans text-[13px] text-ink outline-none cursor-pointer focus:border-wine transition-colors"
+                                            >
+                                                <option value={5}>5 ★★★★★</option>
+                                                <option value={4}>4 ★★★★☆</option>
+                                                <option value={3}>3 ★★★☆☆</option>
+                                                <option value={2}>2 ★★☆☆☆</option>
+                                                <option value={1}>1 ★☆☆☆☆</option>
+                                            </select>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="Review title (optional)"
+                                            value={reviewForm.title}
+                                            onChange={(e) => setReviewForm((f) => ({ ...f, title: e.target.value }))}
+                                            className="border border-ink/14 bg-none py-2.5 px-3 font-sans text-[13px] text-ink placeholder:text-sage/60 outline-none focus:border-wine transition-colors"
+                                        />
+                                        <textarea
+                                            placeholder="Write your review..."
+                                            value={reviewForm.body}
+                                            onChange={(e) => setReviewForm((f) => ({ ...f, body: e.target.value }))}
+                                            required
+                                            rows={3}
+                                            className="border border-ink/14 bg-none py-2.5 px-3 font-sans text-[13px] text-ink placeholder:text-sage/60 outline-none focus:border-wine transition-colors resize-none"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={reviewSubmitting}
+                                            className="self-start bg-ink text-bone px-5 py-2.5 font-mono text-[11px] tracking-[0.06em] uppercase border-none cursor-pointer transition-colors hover:bg-wine disabled:opacity-50"
+                                        >
+                                            {reviewSubmitting ? "Submitting..." : "Submit review"}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
