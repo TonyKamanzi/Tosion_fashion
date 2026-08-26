@@ -15,6 +15,7 @@ import reviewRoutes from "./routes/review.routes.js"
 import promoRoutes from "./routes/promo.routes.js"
 import cartRoutes from "./routes/cart.routes.js"
 import orderRoutes from "./routes/order.routes.js"
+import adminRoutes from "./routes/admin.routes.js"
 import PromoCode from "./models/promo.model.js"
 import cors from "cors"
 
@@ -72,6 +73,7 @@ app.use("/reviews", reviewRoutes);
 app.use("/promos", promoRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
+app.use("/admin", adminRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
