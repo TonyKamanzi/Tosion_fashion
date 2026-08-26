@@ -180,6 +180,43 @@ export default function Header() {
                         Search
                         <span className="absolute left-0 -bottom-1 h-px w-0 bg-wine transition-all duration-300 group-hover:w-full" />
                     </Link>
+                    {user ? (
+                        <>
+                            <div className="h-px bg-ink/15 my-1"></div>
+                            <Link
+                                href="/account"
+                                onClick={() => setOpen(false)}
+                                className="group relative w-fit"
+                            >
+                                My Account
+                                <span className="absolute left-0 -bottom-1 h-px w-0 bg-wine transition-all duration-300 group-hover:w-full" />
+                            </Link>
+                            <Link
+                                href="/wishlist"
+                                onClick={() => setOpen(false)}
+                                className="group relative w-fit"
+                            >
+                                Wishlist
+                                <span className="absolute left-0 -bottom-1 h-px w-0 bg-wine transition-all duration-300 group-hover:w-full" />
+                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => { void handleLogout(); setOpen(false); }}
+                                className="text-left text-wine cursor-pointer bg-none border-none font-sans text-[13px] tracking-[0.03em] p-0"
+                            >
+                                Sign out
+                            </button>
+                        </>
+                    ) : (
+                        <Link
+                            href="/login"
+                            onClick={() => setOpen(false)}
+                            className="group relative w-fit"
+                        >
+                            Account
+                            <span className="absolute left-0 -bottom-1 h-px w-0 bg-wine transition-all duration-300 group-hover:w-full" />
+                        </Link>
+                    )}
                 </nav>
             )}
         </div>
