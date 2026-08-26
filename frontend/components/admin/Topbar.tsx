@@ -40,7 +40,7 @@ export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders`, { withCredentials: true });
+                const res = await axios.get(`http://localhost:2000/orders`, { withCredentials: true });
                 const items = (res.data.items || []).slice(0, 5);
                 setNotifications(
                     items.map((o: { _id: string; orderNumber: string; total: number; createdAt: string }) => ({

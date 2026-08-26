@@ -20,7 +20,7 @@ export default function TopProducts() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/top-products`, { withCredentials: true });
+                const res = await axios.get(`http://localhost:2000/admin/top-products`, { withCredentials: true });
                 setProducts(res.data.items);
             } catch {
                 // silent

@@ -24,9 +24,9 @@ export default function AnalyticsManager() {
         void (async () => {
             try {
                 const [statsRes, chartRes, productsRes] = await Promise.all([
-                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/stats`, { withCredentials: true }),
-                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/revenue-chart`, { withCredentials: true }),
-                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/top-products`, { withCredentials: true }),
+                    axios.get("http://localhost:2000/admin/stats", { withCredentials: true }),
+                    axios.get("http://localhost:2000/admin/revenue-chart", { withCredentials: true }),
+                    axios.get("http://localhost:2000/admin/top-products", { withCredentials: true }),
                 ]);
                 setStats(statsRes.data);
                 setChart(chartRes.data.items);

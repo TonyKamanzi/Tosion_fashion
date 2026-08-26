@@ -20,7 +20,7 @@ export default function CustomersManager() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/customers`, { withCredentials: true });
+                const res = await axios.get(`http://localhost:2000/admin/customers`, { withCredentials: true });
                 setCustomers(res.data.items);
             } catch {
                 // silent

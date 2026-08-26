@@ -121,7 +121,7 @@ export default function Sidebar() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/stats`, { withCredentials: true });
+                const res = await axios.get(`http://localhost:2000/admin/stats`, { withCredentials: true });
                 setPendingOrders(res.data.pendingOrders || 0);
             } catch {
                 // silent

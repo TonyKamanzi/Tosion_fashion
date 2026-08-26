@@ -13,7 +13,7 @@ export default function RevenueChart() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/revenue-chart`, { withCredentials: true });
+                const res = await axios.get(`http://localhost:2000/admin/revenue-chart`, { withCredentials: true });
                 setWeeks(res.data.items);
             } catch {
                 // silent

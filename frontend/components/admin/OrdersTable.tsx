@@ -40,7 +40,7 @@ export default function OrdersTable() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders`, { withCredentials: true });
+                const res = await axios.get(`http://localhost:2000/orders`, { withCredentials: true });
                 setOrders((res.data.items || []).slice(0, 6));
             } catch {
                 // silent
