@@ -140,8 +140,9 @@ export default function Header() {
                     <Link
                         className="font-mono text-[11px] tracking-widest border px-3.5 py-2 border-ink hover:bg-ink hover:text-bone transition-colors"
                         href="/bag"
+                        suppressHydrationWarning
                     >
-                        Bag ({items.length})
+                        Bag (<span suppressHydrationWarning>{items.length}</span>)
                     </Link>
                     <button
                         type="button"
