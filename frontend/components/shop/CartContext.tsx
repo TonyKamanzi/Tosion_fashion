@@ -1,6 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useReducer, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useReducer, useRef, type ReactNode } from "react";
+import axios from "axios";
+import { useCustomerSession } from "./CustomerSessionContext";
 
 export type CartItem = {
     _id: string;
@@ -36,7 +38,8 @@ type Action =
     | { type: "MOVE_TO_BAG"; id: string }
     | { type: "CLEAR" }
     | { type: "APPLY_PROMO"; promo: PromoInfo }
-    | { type: "REMOVE_PROMO" };
+    | { type: "REMOVE_PROMO" }
+    | { type: "LOAD_SERVER"; items: CartItem[]; saved: CartItem[]; promo: PromoInfo };
 
 function cartReducer(state: CartState, action: Action): CartState {
     switch (action.type) {
@@ -93,6 +96,8 @@ function cartReducer(state: CartState, action: Action): CartState {
             return { ...state, promo: action.promo };
         case "REMOVE_PROMO":
             return { ...state, promo: null };
+        case "LOAD_SERVER":
+            return { items: action.items, saved: action.saved, promo: action.promo };
         default:
             return state;
     }
@@ -126,11 +131,69 @@ type CartContextValue = CartState & {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+    const { user } = useCustomerSession();
     const [state, dispatch] = useReducer(cartReducer, undefined, loadState);
+    const hasSyncedRef = useRef(false);
 
+    // persist to localStorage (always, for guests)
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }, [state]);
+
+    // when user logs in, load server cart
+    useEffect(() => {
+        if (!user) {
+            hasSyncedRef.current = false;
+            return;
+        }
+        if (hasSyncedRef.current) return;
+        hasSyncedRef.current = true;
+
+        void (async () => {
+            try {
+                const { data } = await axios.get<{
+                    items: CartItem[];
+                    saved: CartItem[];
+                    promo: PromoInfo;
+                }>("http://localhost:2000/cart", { withCredentials: true });
+
+                const localState = loadState();
+                const serverHasItems = data.items && data.items.length > 0;
+                const localHasItems = localState.items.length > 0;
+
+                if (serverHasItems && !localHasItems) {
+                    // server has items, local is empty — load from server
+                    dispatch({ type: "LOAD_SERVER", items: data.items, saved: data.saved || [], promo: data.promo || null });
+                } else if (localHasItems && !serverHasItems) {
+                    // local has items, server is empty — push to server
+                    await axios.put("http://localhost:2000/cart", localState, { withCredentials: true });
+                } else if (serverHasItems && localHasItems) {
+                    // both have items — server wins
+                    dispatch({ type: "LOAD_SERVER", items: data.items, saved: data.saved || [], promo: data.promo || null });
+                    await axios.put("http://localhost:2000/cart", {
+                        items: data.items,
+                        saved: data.saved || [],
+                        promo: data.promo || null,
+                    }, { withCredentials: true });
+                }
+            } catch { /* ignore — stay with localStorage */ }
+        })();
+    }, [user]);
+
+    // sync to server on every cart change when logged in (debounced)
+    const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(() => {
+        if (!user) return;
+
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = setTimeout(() => {
+            void axios.put("http://localhost:2000/cart", state, { withCredentials: true });
+        }, 500);
+
+        return () => {
+            if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        };
+    }, [user, state]);
 
     const addItem = useCallback((item: CartItem) => dispatch({ type: "ADD", item }), []);
     const removeItem = useCallback((id: string) => dispatch({ type: "REMOVE", id }), []);
