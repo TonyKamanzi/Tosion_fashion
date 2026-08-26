@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useCart } from "./CartContext";
 
 export type ShopProduct = {
     _id: string;
@@ -32,6 +33,7 @@ function formatPrice(value: number) {
 
 export default function ProductCard({ product, view = "grid" }: ProductCardProps) {
     const hasAlt = Boolean(product.imageAltUrl);
+    const { addItem } = useCart();
 
     const media = (
         <Link
@@ -76,10 +78,29 @@ export default function ProductCard({ product, view = "grid" }: ProductCardProps
                 />
             )}
 
-            {/* quick add — visual only until the cart exists */}
-            <div className="absolute left-3 right-3 bottom-3 bg-bone text-ink text-center py-3 font-mono text-[11px] tracking-[0.08em] uppercase opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 pointer-events-none">
+            {/* quick add */}
+            <button
+                type="button"
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addItem({
+                        _id: product._id,
+                        name: product.name,
+                        slug: product.slug,
+                        price: product.price,
+                        imageUrl: product.imageUrl,
+                        imageAltUrl: product.imageAltUrl,
+                        category: product.category,
+                        selectedColor: product.colors.length > 0 ? product.colors[0] : null,
+                        selectedSize: product.sizes.length > 0 ? product.sizes[0] : "",
+                        qty: 1,
+                    });
+                }}
+                className="absolute left-3 right-3 bottom-3 bg-bone text-ink text-center py-3 font-mono text-[11px] tracking-[0.08em] uppercase opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 cursor-pointer"
+            >
                 Quick add
-            </div>
+            </button>
         </Link>
     );
 
