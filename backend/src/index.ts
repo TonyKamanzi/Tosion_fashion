@@ -11,6 +11,7 @@ import arrivalRoutes from "./routes/arrival.routes.js"
 import editorialRoutes from "./routes/editorial.routes.js"
 import newsletterRoutes from "./routes/newsletter.routes.js"
 import productRoutes from "./routes/product.routes.js"
+import reviewRoutes from "./routes/review.routes.js"
 import cors from "cors"
 
 dotenv.config();
@@ -56,6 +57,7 @@ app.use("/arrivals", arrivalRoutes);
 app.use("/editorial", editorialRoutes);
 app.use("/newsletter", newsletterRoutes);
 app.use("/products", productRoutes);
+app.use("/reviews", reviewRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
