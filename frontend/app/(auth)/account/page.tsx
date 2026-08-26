@@ -1,10 +1,5 @@
-import type { Metadata } from "next";
-import Auth from "@/components/Auth";
-
-export const metadata: Metadata = {
-    title: "Sign In — Tosion",
-};
+import { redirect } from "next/navigation";
 
 export default function AccountPage() {
-    return <Auth />;
+    redirect("/login");
 }

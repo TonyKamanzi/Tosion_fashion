@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/components/shop/CartContext";
+import { useCustomerSession } from "@/components/shop/CustomerSessionContext";
 
 const links = [
     { href: "/shop", label: "New In" },
@@ -13,32 +13,15 @@ const links = [
     { href: "/shop/accessories", label: "Accessories" },
 ];
 
-// shape returned by GET /auth/me
-type SessionUser = {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-};
-
 export default function Header() {
     const [open, setOpen] = useState(false);
-    const [user, setUser] = useState<SessionUser | null>(null);
     const [accountOpen, setAccountOpen] = useState(false);
     const accountRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { items } = useCart();
+    const { user, logout } = useCustomerSession();
 
-    // pick up the current session so the navbar reacts to login/logout
-    useEffect(() => {
-        axios
-            .get<SessionUser>("http://localhost:2000/auth/me", { withCredentials: true })
-            .then((res) => setUser(res.data))
-            .catch(() => setUser(null));
-    }, []);
-
-    // close the account dropdown when clicking outside of it
+    // close the account dropdown when clicking outside
     useEffect(() => {
         if (!accountOpen) return;
         const onClickAway = (e: MouseEvent) => {
@@ -51,17 +34,9 @@ export default function Header() {
     }, [accountOpen]);
 
     const handleLogout = async () => {
-        try {
-            await axios.post(
-                "http://localhost:2000/auth/logout",
-                {},
-                { withCredentials: true }
-            );
-        } finally {
-            setUser(null);
-            setAccountOpen(false);
-            router.push("/");
-        }
+        await logout();
+        setAccountOpen(false);
+        router.push("/");
     };
 
     return (
