@@ -118,7 +118,15 @@ export const getProducts = async (req: Request, res: Response) => {
       departmentFilter.department = department;
     }
 
-    const filter = { enabled: true, ...categoryFilter, ...departmentFilter };
+    // optional text search on name + description
+    const q = textOr(req.query.q);
+    let searchFilter: Record<string, unknown> = {};
+    if (q) {
+      const regex = new RegExp(q, "i");
+      searchFilter = { $or: [{ name: regex }, { description: regex }] };
+    }
+
+    const filter = { enabled: true, ...categoryFilter, ...departmentFilter, ...searchFilter };
     const total = await Product.countDocuments(filter);
     const pages = Math.max(1, Math.ceil(total / limit));
     const safePage = Math.min(page, pages);
