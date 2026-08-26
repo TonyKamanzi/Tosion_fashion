@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 import { useCart, type CartItem } from "./CartContext";
+import { useCustomerSession } from "./CustomerSessionContext";
 import { calcTotals } from "./calcTotals";
 import StepsBar from "./StepsBar";
 
@@ -322,16 +323,39 @@ function Confirmation({ orderNumber, items, total }: { orderNumber: string; item
 
 export default function CheckoutPage() {
     const { items, promo, clearCart } = useCart();
+    const { user } = useCustomerSession();
     const [step, setStep] = useState<2 | 3>(2);
     const [shipping, setShipping] = useState<ShippingForm>(EMPTYShipping);
     const [payment, setPayment] = useState<PaymentForm>(EMPTY_PAYMENT);
     const [confirmed, setConfirmed] = useState(false);
     const [orderNumber, setOrderNumber] = useState("");
+    const [orderTotal, setOrderTotal] = useState(0);
+    const [orderItems, setOrderItems] = useState<CartItem[]>([]);
+    const [placing, setPlacing] = useState(false);
+    const [placeError, setPlaceError] = useState("");
 
     const { totalItems, subtotal, shipping: shippingCost, tax, discount, total } = calcTotals(items, promo);
 
     if (confirmed) {
-        return <Confirmation orderNumber={orderNumber} items={items} total={total} />;
+        return <Confirmation orderNumber={orderNumber} items={orderItems} total={orderTotal} />;
+    }
+
+    if (!user) {
+        return (
+            <div className="mt-20 bg-bone min-h-[calc(100vh-80px)] flex items-center justify-center">
+                <div className="text-center px-[5vw]">
+                    <p className="font-mono text-[12px] text-sage tracking-[0.04em] mb-6">
+                        Please sign in to proceed with checkout.
+                    </p>
+                    <Link
+                        href="/account"
+                        className="inline-flex items-center justify-center gap-3 bg-ink text-bone px-8 py-[17px] text-[13px] tracking-[0.04em] font-medium border-none cursor-pointer transition-colors hover:bg-wine"
+                    >
+                        Sign in <span>→</span>
+                    </Link>
+                </div>
+            </div>
+        );
     }
 
     if (items.length === 0) {
@@ -356,10 +380,22 @@ export default function CheckoutPage() {
     const updatePayment = (field: keyof PaymentForm, value: string) =>
         setPayment((prev) => ({ ...prev, [field]: value }));
 
-    const handlePlaceOrder = () => {
-        setOrderNumber(`TS-${Date.now().toString(36).toUpperCase()}`);
-        clearCart();
-        setConfirmed(true);
+    const handlePlaceOrder = async () => {
+        setPlacing(true);
+        setPlaceError("");
+        try {
+            const { data } = await axios.post("http://localhost:2000/orders", { shipping }, { withCredentials: true });
+            setOrderNumber(data.orderNumber);
+            setOrderTotal(data.total);
+            setOrderItems(items);
+            clearCart();
+            setConfirmed(true);
+        } catch (err: unknown) {
+            const msg = axios.isAxiosError(err) ? err.response?.data?.message : "Failed to place order";
+            setPlaceError(msg || "Failed to place order");
+        } finally {
+            setPlacing(false);
+        }
     };
 
     return (
@@ -573,11 +609,15 @@ export default function CheckoutPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 flex items-center justify-center gap-3 bg-ink text-bone px-6.5 py-[17px] text-[13px] tracking-[0.04em] font-medium border-none cursor-pointer transition-colors hover:bg-wine"
+                                    disabled={placing}
+                                    className="flex-1 flex items-center justify-center gap-3 bg-ink text-bone px-6.5 py-[17px] text-[13px] tracking-[0.04em] font-medium border-none cursor-pointer transition-colors hover:bg-wine disabled:opacity-50"
                                 >
-                                    Place order — {formatPrice(total)} <span>→</span>
+                                    {placing ? "Placing order..." : <>Place order — {formatPrice(total)} <span>→</span></>}
                                 </button>
                             </div>
+                            {placeError && (
+                                <p className="font-mono text-[11px] text-wine">{placeError}</p>
+                            )}
                         </form>
                     )}
                 </div>
