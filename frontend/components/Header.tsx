@@ -133,6 +133,17 @@ export default function Header() {
                                             →
                                         </span>
                                     </Link>
+                                    {/* orders */}
+                                    <Link
+                                        href="/account"
+                                        onClick={() => setAccountOpen(false)}
+                                        className="w-full text-left px-4 py-3 font-mono text-[11px] tracking-[0.08em] uppercase text-ink hover:text-wine transition-colors flex items-center justify-between group"
+                                    >
+                                        Orders
+                                        <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
+                                            →
+                                        </span>
+                                    </Link>
                                     {/* logout */}
                                     <button
                                         type="button"
@@ -148,7 +159,7 @@ export default function Header() {
                             )}
                         </div>
                     ) : (
-                        <Link href="/account">Account</Link>
+                        <Link href="/login">Account</Link>
                     )}
 
                     <Link
