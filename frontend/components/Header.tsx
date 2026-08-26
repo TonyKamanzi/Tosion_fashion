@@ -4,6 +4,7 @@ import Link from "next/link";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/components/shop/CartContext";
 
 const links = [
     { href: "/shop", label: "New In" },
@@ -27,6 +28,7 @@ export default function Header() {
     const [accountOpen, setAccountOpen] = useState(false);
     const accountRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    const { items } = useCart();
 
     // pick up the current session so the navbar reacts to login/logout
     useEffect(() => {
@@ -142,7 +144,7 @@ export default function Header() {
                         className="font-mono text-[11px] tracking-widest border px-3.5 py-2 border-ink hover:bg-ink hover:text-bone transition-colors"
                         href="/bag"
                     >
-                        Bag (2)
+                        Bag ({items.length})
                     </Link>
                     <button
                         type="button"
