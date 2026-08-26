@@ -45,7 +45,7 @@ export const placeOrder = async (req: Request, res: Response) => {
     const order = await Order.create({
       user: userId,
       items: cart.items.map((i) => ({
-        product: i.product || i._id,
+        product: i.product || (i as unknown as Record<string, unknown>)._id,
         name: i.name,
         slug: i.slug,
         price: i.price,
