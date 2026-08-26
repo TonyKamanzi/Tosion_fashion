@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useCart } from "./CartContext";
 
 export type ProductDoc = {
     _id: string;
@@ -41,6 +42,7 @@ export default function ProductDetail({ product }: Props) {
     const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
         details: true,
     });
+    const { addItem } = useCart();
 
     const toggleAccordion = (key: string) =>
         setOpenAccordions((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -251,6 +253,20 @@ export default function ProductDetail({ product }: Props) {
                 <div className="flex gap-3 mb-6">
                     <button
                         type="button"
+                        onClick={() => {
+                            addItem({
+                                _id: product._id,
+                                name: product.name,
+                                slug: product.slug,
+                                price: product.price,
+                                imageUrl: product.imageUrl,
+                                imageAltUrl: product.imageAltUrl,
+                                category: product.category,
+                                selectedColor: product.colors.find((c) => c.hex === selectedColor) || null,
+                                selectedSize,
+                                qty,
+                            });
+                        }}
                         className="flex-1 flex items-center justify-center gap-3 bg-ink text-bone px-6.5 py-[17px] text-[13px] tracking-[0.04em] font-medium border-none cursor-pointer transition-colors hover:bg-wine"
                     >
                         Add to bag — {formatPrice(product.price)}
