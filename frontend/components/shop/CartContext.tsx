@@ -25,7 +25,8 @@ type Action =
     | { type: "REMOVE"; id: string }
     | { type: "UPDATE_QTY"; id: string; qty: number }
     | { type: "SAVE_FOR_LATER"; id: string }
-    | { type: "MOVE_TO_BAG"; id: string };
+    | { type: "MOVE_TO_BAG"; id: string }
+    | { type: "CLEAR" };
 
 function cartReducer(state: CartState, action: Action): CartState {
     switch (action.type) {
@@ -74,6 +75,8 @@ function cartReducer(state: CartState, action: Action): CartState {
                 saved: state.saved.filter((i) => i._id !== action.id),
             };
         }
+        case "CLEAR":
+            return { items: [], saved: [] };
         default:
             return state;
     }
@@ -96,6 +99,7 @@ type CartContextValue = CartState & {
     updateQty: (id: string, qty: number) => void;
     saveForLater: (id: string) => void;
     moveToBag: (id: string) => void;
+    clearCart: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -112,9 +116,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const updateQty = (id: string, qty: number) => dispatch({ type: "UPDATE_QTY", id, qty });
     const saveForLater = (id: string) => dispatch({ type: "SAVE_FOR_LATER", id });
     const moveToBag = (id: string) => dispatch({ type: "MOVE_TO_BAG", id });
+    const clearCart = () => dispatch({ type: "CLEAR" });
 
     return (
-        <CartContext.Provider value={{ ...state, addItem, removeItem, updateQty, saveForLater, moveToBag }}>
+        <CartContext.Provider value={{ ...state, addItem, removeItem, updateQty, saveForLater, moveToBag, clearCart }}>
             {children}
         </CartContext.Provider>
     );
