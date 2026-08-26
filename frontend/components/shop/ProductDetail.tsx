@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useCart } from "./CartContext";
+import { useWishlist } from "./WishlistContext";
 
 export type ProductDoc = {
     _id: string;
@@ -43,6 +44,8 @@ export default function ProductDetail({ product }: Props) {
         details: true,
     });
     const { addItem } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlist();
+    const saved = isInWishlist(product._id);
 
     const toggleAccordion = (key: string) =>
         setOpenAccordions((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -274,10 +277,23 @@ export default function ProductDetail({ product }: Props) {
                     </button>
                     <button
                         type="button"
-                        aria-label="Add to wishlist"
-                        className="w-[54px] shrink-0 border border-ink bg-none cursor-pointer flex items-center justify-center text-ink transition-all hover:bg-ink hover:text-bone"
+                        aria-label={saved ? "Remove from wishlist" : "Add to wishlist"}
+                        onClick={() => toggleWishlist({
+                            _id: product._id,
+                            name: product.name,
+                            slug: product.slug,
+                            price: product.price,
+                            imageUrl: product.imageUrl,
+                            imageAltUrl: product.imageAltUrl,
+                            category: product.category,
+                        })}
+                        className={`w-[54px] shrink-0 border cursor-pointer flex items-center justify-center transition-all ${
+                            saved
+                                ? "border-wine bg-wine text-bone"
+                                : "border-ink bg-none text-ink hover:bg-ink hover:text-bone"
+                        }`}
                     >
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8">
                             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
                         </svg>
                     </button>
