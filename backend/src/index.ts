@@ -12,6 +12,8 @@ import editorialRoutes from "./routes/editorial.routes.js"
 import newsletterRoutes from "./routes/newsletter.routes.js"
 import productRoutes from "./routes/product.routes.js"
 import reviewRoutes from "./routes/review.routes.js"
+import promoRoutes from "./routes/promo.routes.js"
+import PromoCode from "./models/promo.model.js"
 import cors from "cors"
 
 dotenv.config();
@@ -46,7 +48,14 @@ app.use(session({
 
 const PORT = process.env.PORT || 2000;
 
-connectDB();
+connectDB().then(async () => {
+  // seed welcome promo code
+  await PromoCode.findOneAndUpdate(
+    { code: "WELCOME10" },
+    { code: "WELCOME10", type: "percent", value: 10, minOrder: 0, maxUses: 0, enabled: true },
+    { upsert: true }
+  );
+});
 
 
 //routes
@@ -58,6 +67,7 @@ app.use("/editorial", editorialRoutes);
 app.use("/newsletter", newsletterRoutes);
 app.use("/products", productRoutes);
 app.use("/reviews", reviewRoutes);
+app.use("/promos", promoRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
