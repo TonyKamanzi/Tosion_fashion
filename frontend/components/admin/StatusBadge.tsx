@@ -1,14 +1,18 @@
-type OrderStatus = "fulfilled" | "pending" | "cancelled";
+type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
 
 const statusStyles: Record<OrderStatus, string> = {
-    fulfilled: "text-good bg-good/10",
     pending: "text-gold bg-gold/12",
-    cancelled: "text-wine bg-wine/8",
+    confirmed: "text-blue-600 bg-blue-500/10",
+    shipped: "text-wine bg-wine/8",
+    delivered: "text-good bg-good/10",
+    cancelled: "text-sage bg-ink/8",
 };
 
 const statusLabels: Record<OrderStatus, string> = {
-    fulfilled: "Fulfilled",
     pending: "Pending",
+    confirmed: "Confirmed",
+    shipped: "Shipped",
+    delivered: "Delivered",
     cancelled: "Cancelled",
 };
 

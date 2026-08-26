@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import axios from "axios";
@@ -13,7 +14,7 @@ type NavItem = {
     badge?: number;
 };
 
-const navGroups: { label: string; items: NavItem[] }[] = [
+const navGroupsBuilder = (pendingOrders: number): { label: string; items: NavItem[] }[] => [
     {
         label: "Overview",
         items: [
@@ -27,7 +28,7 @@ const navGroups: { label: string; items: NavItem[] }[] = [
             {
                 label: "Orders",
                 href: "/admin/orders",
-                badge: 12,
+                badge: pendingOrders > 0 ? pendingOrders : undefined,
                 icon: (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L22 6H6" /><circle cx="9" cy="21" r="1" /><circle cx="18" cy="21" r="1" /></svg>
                 ),
@@ -115,6 +116,20 @@ export default function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const sessionUser = useAdminSession();
+    const [pendingOrders, setPendingOrders] = useState(0);
+
+    useEffect(() => {
+        void (async () => {
+            try {
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/stats`, { withCredentials: true });
+                setPendingOrders(res.data.pendingOrders || 0);
+            } catch {
+                // silent
+            }
+        })();
+    }, []);
+
+    const navGroups = navGroupsBuilder(pendingOrders);
 
     const name = `${sessionUser.firstName} ${sessionUser.lastName}`;
     const role = sessionUser.role === "admin" ? "Store Admin" : sessionUser.role;
