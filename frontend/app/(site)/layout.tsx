@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/shop/CartContext";
 import { WishlistProvider } from "@/components/shop/WishlistContext";
 import { CustomerSessionProvider } from "@/components/shop/CustomerSessionContext";
+import { Toaster } from "sonner";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -13,6 +14,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
                         <Header />
                         {children}
                         <Footer />
+                        <Toaster position="bottom-right" theme="light" richColors />
                     </div>
                 </WishlistProvider>
             </CartProvider>

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Sidebar from "@/components/admin/Sidebar";
 import Topbar from "@/components/admin/Topbar";
 import AdminSessionProvider, { type AdminUser } from "@/components/admin/AdminSessionContext";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
     title: "Dashboard — Tosion Admin",
@@ -39,6 +40,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                     {children}
                 </main>
             </div>
+            <Toaster position="top-right" theme="light" richColors />
         </AdminSessionProvider>
     );
 }

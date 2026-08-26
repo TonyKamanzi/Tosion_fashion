@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
+import { toast } from "sonner";
 import { useCart, type CartItem } from "./CartContext";
 import { calcTotals } from "./calcTotals";
 import StepsBar from "./StepsBar";
@@ -141,6 +142,7 @@ export default function BagPage() {
             if (data.valid) {
                 applyPromo({ code: data.code, type: data.type, value: data.value, discountAmount: data.discountAmount });
                 setPromoCode("");
+                toast.success("Promo applied", { description: `${data.code} — ${data.type === "percent" ? `${data.value}% off` : `$${data.value} off`}` });
             } else {
                 setPromoError(data.message || "Invalid code");
             }

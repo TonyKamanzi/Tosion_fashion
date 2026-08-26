@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useCart } from "@/components/shop/CartContext";
 import { useCustomerSession } from "@/components/shop/CustomerSessionContext";
 
@@ -36,6 +37,7 @@ export default function Header() {
     const handleLogout = async () => {
         await logout();
         setAccountOpen(false);
+        toast.success("Logged out", { description: "You've been signed out." });
         router.push("/");
     };
 

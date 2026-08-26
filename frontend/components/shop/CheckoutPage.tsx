@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
+import { toast } from "sonner";
 import { useCart, type CartItem } from "./CartContext";
 import { useCustomerSession } from "./CustomerSessionContext";
 import { calcTotals } from "./calcTotals";
@@ -118,6 +119,7 @@ function SummaryPanel({ items, totalItems, subtotal, shipping, tax, discount, to
             if (data.valid) {
                 applyPromo({ code: data.code, type: data.type, value: data.value, discountAmount: data.discountAmount });
                 setPromoCode("");
+                toast.success("Promo applied", { description: `${data.code} — ${data.type === "percent" ? `${data.value}% off` : `$${data.value} off`}` });
             } else {
                 setPromoError(data.message || "Invalid code");
             }
@@ -310,12 +312,20 @@ function Confirmation({ orderNumber, items, total }: { orderNumber: string; item
                     </div>
                 </div>
 
-                <Link
-                    href="/shop"
-                    className="inline-flex items-center justify-center gap-3 bg-ink text-bone px-8 py-[17px] text-[13px] tracking-[0.04em] font-medium border-none cursor-pointer transition-colors hover:bg-wine"
-                >
-                    Continue shopping <span>→</span>
-                </Link>
+                <div className="flex gap-3 justify-center flex-wrap">
+                    <Link
+                        href="/account"
+                        className="inline-flex items-center justify-center gap-3 bg-ink text-bone px-8 py-[17px] text-[13px] tracking-[0.04em] font-medium border-none cursor-pointer transition-colors hover:bg-wine"
+                    >
+                        View my order <span>→</span>
+                    </Link>
+                    <Link
+                        href="/shop"
+                        className="inline-flex items-center justify-center gap-3 bg-bone-2 text-ink px-8 py-[17px] text-[13px] tracking-[0.04em] font-medium border border-ink/15 cursor-pointer transition-colors hover:bg-wine hover:text-bone hover:border-wine"
+                    >
+                        Continue shopping <span>→</span>
+                    </Link>
+                </div>
             </div>
         </div>
     );
@@ -390,6 +400,7 @@ export default function CheckoutPage() {
             setOrderItems(items);
             clearCart();
             setConfirmed(true);
+            toast.success("Order placed!", { description: `Order ${data.orderNumber} confirmed.` });
         } catch (err: unknown) {
             const msg = axios.isAxiosError(err) ? err.response?.data?.message : "Failed to place order";
             setPlaceError(msg || "Failed to place order");
