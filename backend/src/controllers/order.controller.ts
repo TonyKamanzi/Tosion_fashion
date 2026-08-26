@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import Order from "../models/order.model.js";
 import Cart from "../models/cart.model.js";
 import PromoCode from "../models/promo.model.js";
+import { createNotification } from "./notification.controller.js";
 
 // ==========================
 // PLACE ORDER (customer, auth required)
@@ -71,6 +72,16 @@ export const placeOrder = async (req: Request, res: Response) => {
       { user: userId },
       { items: [], saved: [], promo: null }
     );
+
+    // create admin notification
+    const customerName = `${shipping.firstName} ${shipping.lastName}`;
+    const itemCount = order.items.length;
+    await createNotification({
+      type: "new_order",
+      title: `New order #${orderNumber}`,
+      message: `${customerName} placed an order for ${itemCount} item${itemCount !== 1 ? "s" : ""} — $${total.toLocaleString()}`,
+      href: "/admin/orders",
+    });
 
     res.status(201).json(order);
   } catch (error) {
@@ -159,6 +170,14 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
+
+    // notify admin of status change
+    await createNotification({
+      type: "order_status",
+      title: `Order #${order.orderNumber} updated`,
+      message: `Status changed to "${status}"`,
+      href: "/admin/orders",
+    });
 
     res.status(200).json(order);
   } catch (error) {
