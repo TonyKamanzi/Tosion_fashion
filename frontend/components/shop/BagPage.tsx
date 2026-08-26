@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
 import { useCart, type CartItem } from "./CartContext";
+import { calcTotals } from "./calcTotals";
 import StepsBar from "./StepsBar";
 
 function formatPrice(value: number) {
@@ -119,12 +122,35 @@ function SavedCard({ item }: { item: CartItem }) {
 }
 
 export default function BagPage() {
-    const { items, saved } = useCart();
-    const totalItems = items.reduce((sum, i) => sum + i.qty, 0);
-    const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-    const shipping = subtotal >= 150 ? 0 : 12;
-    const tax = Math.round(subtotal * 0.05 * 100) / 100;
-    const total = subtotal + shipping + tax;
+    const { items, saved, promo, applyPromo, removePromo } = useCart();
+    const { totalItems, subtotal, shipping, tax, discount, total } = calcTotals(items, promo);
+
+    const [promoCode, setPromoCode] = useState("");
+    const [promoError, setPromoError] = useState("");
+    const [promoLoading, setPromoLoading] = useState(false);
+
+    const handleApplyPromo = async () => {
+        if (!promoCode.trim()) return;
+        setPromoLoading(true);
+        setPromoError("");
+        try {
+            const { data } = await axios.post("http://localhost:2000/promos/validate", {
+                code: promoCode.trim(),
+                subtotal,
+            });
+            if (data.valid) {
+                applyPromo({ code: data.code, type: data.type, value: data.value, discountAmount: data.discountAmount });
+                setPromoCode("");
+            } else {
+                setPromoError(data.message || "Invalid code");
+            }
+        } catch (err: unknown) {
+            const msg = axios.isAxiosError(err) ? err.response?.data?.message : "Failed to validate";
+            setPromoError(msg || "Failed to validate");
+        } finally {
+            setPromoLoading(false);
+        }
+    };
 
     return (
         <div className="mt-20 bg-bone min-h-[calc(100vh-80px)]">
@@ -195,19 +221,48 @@ export default function BagPage() {
                     <h3 className="font-display font-medium text-[20px] mb-6">Order Summary</h3>
 
                     {/* promo */}
-                    <div className="flex border border-ink mb-7">
-                        <input
-                            type="text"
-                            placeholder="Promo code"
-                            className="flex-1 border-none outline-none bg-none py-3.5 px-3.5 font-sans text-[13.5px] text-ink placeholder:text-sage"
-                        />
-                        <button
-                            type="button"
-                            className="bg-ink text-bone border-none px-4.5 cursor-pointer font-mono text-[11px] tracking-[0.06em] uppercase"
-                        >
-                            Apply
-                        </button>
-                    </div>
+                    {promo ? (
+                        <div className="flex items-center justify-between border border-good/30 bg-good/5 px-4 py-3 mb-7">
+                            <div>
+                                <span className="font-mono text-[11px] tracking-[0.06em] uppercase text-good mr-2">
+                                    {promo.code}
+                                </span>
+                                <span className="text-[12.5px] text-sage">
+                                    — {promo.type === "percent" ? `${promo.value}% off` : `${formatPrice(promo.value)} off`}
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={removePromo}
+                                className="font-mono text-[11px] text-wine underline underline-offset-[3px] cursor-pointer bg-none border-none hover:text-ink"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="mb-7">
+                            <div className="flex border border-ink">
+                                <input
+                                    type="text"
+                                    placeholder="Promo code"
+                                    value={promoCode}
+                                    onChange={(e) => { setPromoCode(e.target.value); setPromoError(""); }}
+                                    className="flex-1 border-none outline-none bg-none py-3.5 px-3.5 font-sans text-[13.5px] text-ink placeholder:text-sage"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleApplyPromo}
+                                    disabled={promoLoading}
+                                    className="bg-ink text-bone border-none px-4.5 cursor-pointer font-mono text-[11px] tracking-[0.06em] uppercase disabled:opacity-50"
+                                >
+                                    {promoLoading ? "..." : "Apply"}
+                                </button>
+                            </div>
+                            {promoError && (
+                                <p className="font-mono text-[11px] text-wine mt-2">{promoError}</p>
+                            )}
+                        </div>
+                    )}
 
                     {/* lines */}
                     <div className="flex justify-between text-[14px] mb-3.5">
@@ -222,6 +277,12 @@ export default function BagPage() {
                         <span>Estimated tax</span>
                         <span className="font-mono">{formatPrice(tax)}</span>
                     </div>
+                    {discount > 0 && (
+                        <div className="flex justify-between text-[14px] text-good mb-3.5">
+                            <span>Discount</span>
+                            <span className="font-mono">-{formatPrice(discount)}</span>
+                        </div>
+                    )}
 
                     <div className="h-px bg-ink/14 my-[18px]" />
 
