@@ -121,8 +121,9 @@ export const getRevenueChart = async (_req: Request, res: Response) => {
     }));
 
     // highlight the most recent week
-    if (chart.length > 0) {
-      chart[chart.length - 1].height = Math.max(chart[chart.length - 1].height, 5);
+    const last = chart[chart.length - 1];
+    if (last) {
+      last.height = Math.max(last.height, 5);
     }
 
     res.status(200).json({ items: chart });
