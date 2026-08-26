@@ -122,6 +122,17 @@ export default function Header() {
                                             {user.email}
                                         </p>
                                     </div>
+                                    {/* wishlist */}
+                                    <Link
+                                        href="/wishlist"
+                                        onClick={() => setAccountOpen(false)}
+                                        className="w-full text-left px-4 py-3 font-mono text-[11px] tracking-[0.08em] uppercase text-ink hover:text-wine transition-colors flex items-center justify-between group"
+                                    >
+                                        Wishlist
+                                        <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
+                                            →
+                                        </span>
+                                    </Link>
                                     {/* logout */}
                                     <button
                                         type="button"
