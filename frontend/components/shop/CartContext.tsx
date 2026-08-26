@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useReducer, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useReducer, type ReactNode } from "react";
 
 export type CartItem = {
     _id: string;
@@ -15,9 +15,17 @@ export type CartItem = {
     qty: number;
 };
 
+export type PromoInfo = {
+    code: string;
+    type: string;
+    value: number;
+    discountAmount: number;
+} | null;
+
 type CartState = {
     items: CartItem[];
     saved: CartItem[];
+    promo: PromoInfo;
 };
 
 type Action =
@@ -26,7 +34,9 @@ type Action =
     | { type: "UPDATE_QTY"; id: string; qty: number }
     | { type: "SAVE_FOR_LATER"; id: string }
     | { type: "MOVE_TO_BAG"; id: string }
-    | { type: "CLEAR" };
+    | { type: "CLEAR" }
+    | { type: "APPLY_PROMO"; promo: PromoInfo }
+    | { type: "REMOVE_PROMO" };
 
 function cartReducer(state: CartState, action: Action): CartState {
     switch (action.type) {
@@ -65,6 +75,7 @@ function cartReducer(state: CartState, action: Action): CartState {
             return {
                 items: state.items.filter((i) => i._id !== action.id),
                 saved: [...state.saved, item],
+                promo: state.promo,
             };
         }
         case "MOVE_TO_BAG": {
@@ -73,10 +84,15 @@ function cartReducer(state: CartState, action: Action): CartState {
             return {
                 items: [...state.items, item],
                 saved: state.saved.filter((i) => i._id !== action.id),
+                promo: state.promo,
             };
         }
         case "CLEAR":
-            return { items: [], saved: [] };
+            return { items: [], saved: [], promo: null };
+        case "APPLY_PROMO":
+            return { ...state, promo: action.promo };
+        case "REMOVE_PROMO":
+            return { ...state, promo: null };
         default:
             return state;
     }
@@ -85,12 +101,15 @@ function cartReducer(state: CartState, action: Action): CartState {
 const STORAGE_KEY = "tosion_cart";
 
 function loadState(): CartState {
-    if (typeof window === "undefined") return { items: [], saved: [] };
+    if (typeof window === "undefined") return { items: [], saved: [], promo: null };
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            return { items: parsed.items || [], saved: parsed.saved || [], promo: parsed.promo || null };
+        }
     } catch { /* ignore */ }
-    return { items: [], saved: [] };
+    return { items: [], saved: [], promo: null };
 }
 
 type CartContextValue = CartState & {
@@ -100,6 +119,8 @@ type CartContextValue = CartState & {
     saveForLater: (id: string) => void;
     moveToBag: (id: string) => void;
     clearCart: () => void;
+    applyPromo: (promo: PromoInfo) => void;
+    removePromo: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -111,15 +132,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }, [state]);
 
-    const addItem = (item: CartItem) => dispatch({ type: "ADD", item });
-    const removeItem = (id: string) => dispatch({ type: "REMOVE", id });
-    const updateQty = (id: string, qty: number) => dispatch({ type: "UPDATE_QTY", id, qty });
-    const saveForLater = (id: string) => dispatch({ type: "SAVE_FOR_LATER", id });
-    const moveToBag = (id: string) => dispatch({ type: "MOVE_TO_BAG", id });
-    const clearCart = () => dispatch({ type: "CLEAR" });
+    const addItem = useCallback((item: CartItem) => dispatch({ type: "ADD", item }), []);
+    const removeItem = useCallback((id: string) => dispatch({ type: "REMOVE", id }), []);
+    const updateQty = useCallback((id: string, qty: number) => dispatch({ type: "UPDATE_QTY", id, qty }), []);
+    const saveForLater = useCallback((id: string) => dispatch({ type: "SAVE_FOR_LATER", id }), []);
+    const moveToBag = useCallback((id: string) => dispatch({ type: "MOVE_TO_BAG", id }), []);
+    const clearCart = useCallback(() => dispatch({ type: "CLEAR" }), []);
+    const applyPromo = useCallback((promo: PromoInfo) => dispatch({ type: "APPLY_PROMO", promo }), []);
+    const removePromo = useCallback(() => dispatch({ type: "REMOVE_PROMO" }), []);
 
     return (
-        <CartContext.Provider value={{ ...state, addItem, removeItem, updateQty, saveForLater, moveToBag, clearCart }}>
+        <CartContext.Provider value={{ ...state, addItem, removeItem, updateQty, saveForLater, moveToBag, clearCart, applyPromo, removePromo }}>
             {children}
         </CartContext.Provider>
     );
