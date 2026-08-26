@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart, type CartItem } from "./CartContext";
+import StepsBar from "./StepsBar";
 
 function formatPrice(value: number) {
     return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -145,22 +146,7 @@ export default function BagPage() {
             </div>
 
             {/* steps */}
-            <div className="flex items-center gap-2.5 pt-7 px-[5vw] font-mono text-[11.5px] tracking-[0.05em] uppercase">
-                <div className="flex items-center gap-2 text-ink">
-                    <span className="w-5 h-5 rounded-full border border-wine bg-wine text-bone flex items-center justify-center text-[10px]">1</span>
-                    Bag
-                </div>
-                <span className="w-9 h-px bg-ink/14" />
-                <div className="flex items-center gap-2 text-sage">
-                    <span className="w-5 h-5 rounded-full border border-sage flex items-center justify-center text-[10px]">2</span>
-                    Shipping
-                </div>
-                <span className="w-9 h-px bg-ink/14" />
-                <div className="flex items-center gap-2 text-sage">
-                    <span className="w-5 h-5 rounded-full border border-sage flex items-center justify-center text-[10px]">3</span>
-                    Payment
-                </div>
-            </div>
+            <StepsBar currentStep={1} />
 
             {/* 2-col layout */}
             <div className="grid grid-cols-[1.6fr_1fr] gap-14 pt-9 pb-[100px] px-[5vw] items-start max-[900px]:grid-cols-1 max-[900px]:gap-10 max-[900px]:px-6 max-[900px]:pb-[70px]">
@@ -246,12 +232,12 @@ export default function BagPage() {
                     </div>
 
                     {/* checkout */}
-                    <button
-                        type="button"
+                    <Link
+                        href="/checkout"
                         className="flex items-center justify-center gap-3 bg-ink text-bone w-full py-[17px] px-6.5 text-[13px] tracking-[0.04em] font-medium border-none cursor-pointer transition-colors hover:bg-wine mb-4"
                     >
                         Checkout — {formatPrice(total)} <span>→</span>
-                    </button>
+                    </Link>
 
                     {/* payment icons */}
                     <div className="flex gap-2.5 justify-center mb-6 opacity-60">
