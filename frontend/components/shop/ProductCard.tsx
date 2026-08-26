@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "./CartContext";
+import { useWishlist } from "./WishlistContext";
 
 export type ShopProduct = {
     _id: string;
@@ -34,6 +35,8 @@ function formatPrice(value: number) {
 export default function ProductCard({ product, view = "grid" }: ProductCardProps) {
     const hasAlt = Boolean(product.imageAltUrl);
     const { addItem } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlist();
+    const saved = isInWishlist(product._id);
 
     const media = (
         <Link
@@ -48,14 +51,28 @@ export default function ProductCard({ product, view = "grid" }: ProductCardProps
                 </span>
             )}
 
-            {/* wishlist heart — visual only until wishlist accounts exist */}
+            {/* wishlist heart */}
             <button
                 type="button"
-                aria-label="Add to wishlist"
-                onClick={(e) => e.stopPropagation()}
-                className="absolute z-10 top-3 left-3 w-8 h-8 rounded-full bg-bone/90 flex items-center justify-center text-ink opacity-0 -translate-y-1 transition-all duration-250 group-hover:opacity-100 group-hover:translate-y-0 cursor-pointer hover:text-wine pointer-events-auto"
+                aria-label={saved ? "Remove from wishlist" : "Add to wishlist"}
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleWishlist({
+                        _id: product._id,
+                        name: product.name,
+                        slug: product.slug,
+                        price: product.price,
+                        imageUrl: product.imageUrl,
+                        imageAltUrl: product.imageAltUrl,
+                        category: product.category,
+                    });
+                }}
+                className={`absolute z-10 top-3 left-3 w-8 h-8 rounded-full bg-bone/90 flex items-center justify-center opacity-0 -translate-y-1 transition-all duration-250 group-hover:opacity-100 group-hover:translate-y-0 cursor-pointer pointer-events-auto ${
+                    saved ? "text-wine opacity-100 translate-y-0" : "text-ink hover:text-wine"
+                }`}
             >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>
             </button>
 
             {/* main + alt images swap on hover, like the template */}
