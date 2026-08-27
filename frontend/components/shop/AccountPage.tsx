@@ -338,7 +338,7 @@ export default function AccountPage() {
                         </div>
                         <div>
                             <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-sage block mb-1">Member since</span>
-                            <p className="text-[14px]">{new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
+                            <p className="text-[14px]">{user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" }) : "—"}</p>
                         </div>
                     </div>
                     <div className="flex gap-4">

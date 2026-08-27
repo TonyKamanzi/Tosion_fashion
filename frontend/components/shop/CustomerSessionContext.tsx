@@ -9,6 +9,7 @@ export type CustomerUser = {
     lastName: string;
     email: string;
     role: string;
+    createdAt?: string;
 };
 
 type CustomerSessionValue = {
