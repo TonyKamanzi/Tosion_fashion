@@ -191,6 +191,7 @@ export const googleLogin = (req: Request, res: Response) => {
 // GOOGLE CALLBACK
 // ==========================
 
+
 export const googleCallback = async (
   req: Request,
   res: Response
@@ -202,6 +203,12 @@ export const googleCallback = async (
       return res.status(400).json({
         message: "Google authorization code is missing",
       });
+    }
+
+    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+
+    if (!googleClientId) {
+      throw new Error("GOOGLE_CLIENT_ID is not configured");
     }
 
     // Exchange authorization code for tokens
@@ -216,7 +223,7 @@ export const googleCallback = async (
     // Verify Google ID token
     const ticket = await googleClient.verifyIdToken({
       idToken: tokens.id_token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: googleClientId,
     });
 
     const payload = ticket.getPayload();
@@ -236,18 +243,13 @@ export const googleCallback = async (
       });
     }
 
-    let user = await User.findOne({
-      googleId,
-    });
+    let user = await User.findOne({ googleId });
 
     // Google account isn't connected yet
     if (!user) {
-      user = await User.findOne({
-        email,
-      });
+      user = await User.findOne({ email });
 
-      // Existing email/password account:
-      // link the Google account
+      // Existing email/password account
       if (user) {
         user.googleId = googleId;
         await user.save();
@@ -275,23 +277,26 @@ export const googleCallback = async (
       });
     }
 
-    // Reuse your existing Express session
+    // Create session
     req.session.user = toSafeUser(user);
 
-    // Redirect back to Next.js: admins to the dashboard, customers to the shop
-    console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
-    const redirectTo = user.role === "admin" ? "/admin" : "/";
+    const frontendUrl = process.env.FRONTEND_URL;
 
-    res.redirect(
-      
-      `${process.env.FRONTEND_URL}${redirectTo}`
-    );
-    } catch (error) {
-  console.error("Google authentication error:", error);
+    if (!frontendUrl) {
+      throw new Error("FRONTEND_URL is not configured");
+    }
 
-  res.status(500).json({
-    message: "Google authentication failed",
-    error: error instanceof Error ? error.message : error,
-  });
-}
+    const redirectTo =
+      user.role === "admin" ? "/admin" : "/";
+
+    return res.redirect(`${frontendUrl}${redirectTo}`);
+
+  } catch (error) {
+    console.error("Google authentication error:", error);
+
+    return res.status(500).json({
+      message: "Google authentication failed",
+      error: error instanceof Error ? error.message : error,
+    });
+  }
 };
