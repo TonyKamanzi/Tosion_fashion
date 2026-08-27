@@ -134,7 +134,7 @@ export default function HeroManager() {
     };
 
     return (
-        <Panel title="Hero & Adverts" link="View homepage">
+        <Panel title="Hero & Adverts" link="View homepage" href="/">
             <div className="p-6">
                 <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-gold mb-6">
                     Homepage hero section

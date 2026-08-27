@@ -82,7 +82,7 @@ export default function NewsletterManager() {
     };
 
     return (
-        <Panel title="Newsletter" link="View homepage">
+        <Panel title="Newsletter" link="View homepage" href="/">
             <div className="p-6">
                 <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-gold mb-6">
                     Homepage newsletter band

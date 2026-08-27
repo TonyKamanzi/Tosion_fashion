@@ -251,7 +251,7 @@ export default function ProductsManager() {
         : "";
 
     return (
-        <Panel title="Products" link="View shop">
+        <Panel title="Products" link="View shop" href="/shop">
             <div className="p-6">
                 <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-gold mb-1">
                     Catalogue

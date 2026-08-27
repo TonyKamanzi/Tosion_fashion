@@ -242,7 +242,7 @@ export default function CategoriesManager() {
         "shrink-0 w-9 h-9 border flex items-center justify-center transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 
     return (
-        <Panel title="Categories" link="View homepage">
+        <Panel title="Categories" link="View homepage" href="/">
             <div className="p-6">
                 <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-gold mb-1">
                     Storefront categories
