@@ -280,11 +280,8 @@ export const googleCallback = async (
     // Create session
     req.session.user = toSafeUser(user);
 
-    const frontendUrl = process.env.FRONTEND_URL;
-
-    if (!frontendUrl) {
-      throw new Error("FRONTEND_URL is not configured");
-    }
+    const frontendUrl =
+      process.env.FRONTEND_URL || "https://tosion-fashion-livid.vercel.app";
 
     const redirectTo =
       user.role === "admin" ? "/admin" : "/";

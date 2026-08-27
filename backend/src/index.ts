@@ -76,6 +76,7 @@ app.use(
       "http://localhost:3000",
       "http://127.0.0.1:3000",
       FRONTEND_URL,
+      "https://tosion-fashion-livid.vercel.app",
     ],
     credentials: true,
   }),
