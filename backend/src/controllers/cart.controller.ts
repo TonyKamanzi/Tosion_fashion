@@ -1,53 +1,183 @@
 import type { Request, Response } from "express";
 import Cart from "../models/cart.model.js";
 
-// map frontend item shape (_id) to server shape (product)
-function toServerItem(item: Record<string, unknown>) {
-  const { _id, ...rest } = item;
-  return { ...rest, product: _id || rest.product };
-}
+// ==========================
+// Types
+// ==========================
 
-// map server item shape (product) to frontend shape (_id)
-function toClientItem(item: Record<string, unknown>) {
-  const { product, ...rest } = item;
-  return { ...rest, _id: product || item._id };
+type ClientCartItem = {
+  _id: unknown;
+  name: string;
+  slug: string;
+  price: number;
+  imageUrl: string;
+  imageAltUrl: string;
+  category?: {
+    label: string;
+    slug: string;
+  } | null;
+  selectedColor?: {
+    name: string;
+    hex: string;
+  } | null;
+  selectedSize: string;
+  qty: number;
+};
+
+type ServerCartItem = {
+  product: unknown;
+  name: string;
+  slug: string;
+  price: number;
+  imageUrl: string;
+  imageAltUrl: string;
+  category?: {
+    label: string;
+    slug: string;
+  } | null;
+  selectedColor?: {
+    name: string;
+    hex: string;
+  } | null;
+  selectedSize: string;
+  qty: number;
+};
+
+// ==========================
+// Convert frontend item -> server item
+// Frontend uses _id
+// Server uses product
+// ==========================
+
+function toServerItem(item: ClientCartItem): ServerCartItem {
+  return {
+    product: item._id,
+    name: item.name,
+    slug: item.slug,
+    price: item.price,
+    imageUrl: item.imageUrl || "",
+    imageAltUrl: item.imageAltUrl || "",
+    category: item.category || null,
+    selectedColor: item.selectedColor || null,
+    selectedSize: item.selectedSize || "",
+    qty: item.qty || 1,
+  };
 }
 
 // ==========================
-// GET CART (auth required)
+// Convert server item -> frontend item
+// Server uses product
+// Frontend uses _id
 // ==========================
 
-export const getCart = async (req: Request, res: Response) => {
+function toClientItem(item: {
+  product: unknown;
+  name: string;
+  slug: string;
+  price: number;
+  imageUrl: string;
+  imageAltUrl: string;
+  category?: {
+    label: string;
+    slug: string;
+  } | null;
+  selectedColor?: {
+    name: string;
+    hex: string;
+  } | null;
+  selectedSize: string;
+  qty: number;
+}): ClientCartItem {
+  return {
+    _id: item.product,
+    name: item.name,
+    slug: item.slug,
+    price: item.price,
+    imageUrl: item.imageUrl,
+    imageAltUrl: item.imageAltUrl,
+    category: item.category,
+    selectedColor: item.selectedColor,
+    selectedSize: item.selectedSize,
+    qty: item.qty,
+  };
+}
+
+// ==========================
+// GET CART
+// ==========================
+
+export const getCart = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const userId = req.session.user!._id;
-    let cart = await Cart.findOne({ user: userId });
+
+    let cart = await Cart.findOne({
+      user: userId,
+    });
 
     if (!cart) {
-      cart = await Cart.create({ user: userId, items: [], saved: [], promo: null });
+      cart = await Cart.create({
+        user: userId,
+        items: [],
+        saved: [],
+        promo: null,
+      });
     }
 
-    // map server items to client shape
     const cartObj = cart.toObject();
-    cartObj.items = cartObj.items.map(toClientItem);
-    cartObj.saved = cartObj.saved.map(toClientItem);
 
-    res.status(200).json(cartObj);
+    const items = cartObj.items.map((item) =>
+      toClientItem(item)
+    );
+
+    const saved = cartObj.saved.map((item) =>
+      toClientItem(item)
+    );
+
+    res.status(200).json({
+      ...cartObj,
+      items,
+      saved,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch cart", error });
+    console.error("Get cart error:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch cart",
+      error,
+    });
   }
 };
 
 // ==========================
-// PUT CART (auth required — full replace)
+// PUT CART
+// Full replace
 // ==========================
 
-export const putCart = async (req: Request, res: Response) => {
+export const putCart = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const userId = req.session.user!._id;
-    const { items, saved, promo } = req.body;
 
-    const serverItems = (items || []).map(toServerItem);
-    const serverSaved = (saved || []).map(toServerItem);
+    const {
+      items = [],
+      saved = [],
+      promo,
+    } = req.body;
+
+    const serverItems: ServerCartItem[] =
+      items.map((item: ClientCartItem) =>
+        toServerItem(item)
+      );
+
+    const serverSaved: ServerCartItem[] =
+      saved.map((item: ClientCartItem) =>
+        toServerItem(item)
+      );
 
     const cart = await Cart.findOneAndUpdate(
       { user: userId },
@@ -56,11 +186,19 @@ export const putCart = async (req: Request, res: Response) => {
         saved: serverSaved,
         promo: promo || null,
       },
-      { new: true, upsert: true }
+      {
+        new: true,
+        upsert: true,
+      }
     );
 
     res.status(200).json(cart);
   } catch (error) {
-    res.status(500).json({ message: "Failed to update cart", error });
+    console.error("Put cart error:", error);
+
+    res.status(500).json({
+      message: "Failed to update cart",
+      error,
+    });
   }
 };
