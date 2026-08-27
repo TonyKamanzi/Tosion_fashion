@@ -3,22 +3,22 @@ import dotenv from "dotenv";
 import { setDefaultResultOrder } from "node:dns";
 import https from "node:https";
 import connectDB from "./config/db.js";
-import session from "express-session"
-import authRoutes from "./routes/auth.routes.js"
-import heroRoutes from "./routes/hero.routes.js"
-import categoryRoutes from "./routes/category.routes.js"
-import arrivalRoutes from "./routes/arrival.routes.js"
-import editorialRoutes from "./routes/editorial.routes.js"
-import newsletterRoutes from "./routes/newsletter.routes.js"
-import productRoutes from "./routes/product.routes.js"
-import reviewRoutes from "./routes/review.routes.js"
-import promoRoutes from "./routes/promo.routes.js"
-import cartRoutes from "./routes/cart.routes.js"
-import orderRoutes from "./routes/order.routes.js"
-import adminRoutes from "./routes/admin.routes.js"
-import notificationRoutes from "./routes/notification.routes.js"
-import PromoCode from "./models/promo.model.js"
-import cors from "cors"
+import session from "express-session";
+import authRoutes from "./routes/auth.routes.js";
+import heroRoutes from "./routes/hero.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import arrivalRoutes from "./routes/arrival.routes.js";
+import editorialRoutes from "./routes/editorial.routes.js";
+import newsletterRoutes from "./routes/newsletter.routes.js";
+import productRoutes from "./routes/product.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
+import promoRoutes from "./routes/promo.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
+import orderRoutes from "./routes/order.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
+import PromoCode from "./models/promo.model.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -28,27 +28,30 @@ dotenv.config();
 setDefaultResultOrder("ipv4first");
 https.globalAgent.options.family = 4;
 
-
 // middleware
 const app = express();
 
 app.use(express.json());
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}))
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || "secret",
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
-    httpOnly: true,
-    secure: false, // Set to true in production with HTTPS
-  },
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      httpOnly: true,
+      secure: false, // Set to true in production with HTTPS
+    },
+  }),
+);
 
 const PORT = process.env.PORT || 2000;
 
@@ -56,11 +59,17 @@ connectDB().then(async () => {
   // seed welcome promo code
   await PromoCode.findOneAndUpdate(
     { code: "WELCOME10" },
-    { code: "WELCOME10", type: "percent", value: 10, minOrder: 0, maxUses: 0, enabled: true },
-    { upsert: true }
+    {
+      code: "WELCOME10",
+      type: "percent",
+      value: 10,
+      minOrder: 0,
+      maxUses: 0,
+      enabled: true,
+    },
+    { upsert: true },
   );
 });
-
 
 //routes
 app.use("/auth", authRoutes);
