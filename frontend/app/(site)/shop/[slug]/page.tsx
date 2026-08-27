@@ -5,6 +5,7 @@ import axios from "axios";
 import ShopListing from "@/components/shop/ShopListing";
 import type { ShopProduct } from "@/components/shop/ProductCard";
 import type { CategoryCount } from "@/components/shop/ShopSidebar";
+import { API_URL } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ type ProductsResponse = {
 
 async function getCategory(slug: string): Promise<CategoryDoc | null> {
     try {
-        const res = await axios.get<CategoryDoc[]>("http://localhost:2000/categories", {
+        const res = await axios.get<CategoryDoc[]>(`${API_URL}/categories`, {
             timeout: 6000,
         });
         return res.data.find((cat) => cat.slug === slug) ?? null;
@@ -50,7 +51,7 @@ async function getProducts(slug: string, department?: string): Promise<ProductsR
         : `category=${encodeURIComponent(slug)}`;
     try {
         const res = await axios.get<ProductsResponse>(
-            `http://localhost:2000/products?${query}&limit=100`,
+            `${API_URL}/products?${query}&limit=100`,
             { timeout: 6000 }
         );
         return res.data;
@@ -61,7 +62,7 @@ async function getProducts(slug: string, department?: string): Promise<ProductsR
 
 async function getCounts(): Promise<CategoryCount[]> {
     try {
-        const res = await axios.get<CategoryCount[]>("http://localhost:2000/products/counts", {
+        const res = await axios.get<CategoryCount[]>(`${API_URL}/products/counts`, {
             timeout: 6000,
         });
         return res.data;

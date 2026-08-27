@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 export type CustomerUser = {
     _id: string;
@@ -32,7 +33,7 @@ export function CustomerSessionProvider({ children }: { children: ReactNode }) {
 
     const refresh = useCallback(async () => {
         try {
-            const { data } = await axios.get<CustomerUser>("http://localhost:2000/auth/me", {
+            const { data } = await axios.get<CustomerUser>(`${API_URL}/auth/me`, {
                 withCredentials: true,
             });
             setUser(data);
@@ -50,7 +51,7 @@ export function CustomerSessionProvider({ children }: { children: ReactNode }) {
 
     const logout = useCallback(async () => {
         try {
-            await axios.post("http://localhost:2000/auth/logout", {}, { withCredentials: true });
+            await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
         } finally {
             setUser(null);
         }

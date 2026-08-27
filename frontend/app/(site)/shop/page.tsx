@@ -4,6 +4,7 @@ import axios from "axios";
 import ShopListing from "@/components/shop/ShopListing";
 import type { ShopProduct } from "@/components/shop/ProductCard";
 import type { CategoryCount } from "@/components/shop/ShopSidebar";
+import { API_URL } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ type ProductsResponse = {
 async function getProducts(): Promise<ProductsResponse> {
     try {
         const res = await axios.get<ProductsResponse>(
-            "http://localhost:2000/products?category=all&limit=100",
+            `${API_URL}/products?category=all&limit=100`,
             { timeout: 6000 }
         );
         return res.data;
@@ -36,7 +37,7 @@ const FALLBACK_COUNTS: CategoryCount[] = [];
 
 async function getCounts(): Promise<CategoryCount[]> {
     try {
-        const res = await axios.get<CategoryCount[]>("http://localhost:2000/products/counts", {
+        const res = await axios.get<CategoryCount[]>(`${API_URL}/products/counts`, {
             timeout: 6000,
         });
         return res.data;

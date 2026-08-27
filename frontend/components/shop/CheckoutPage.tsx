@@ -9,6 +9,7 @@ import { useCart, type CartItem } from "./CartContext";
 import { useCustomerSession } from "./CustomerSessionContext";
 import { calcTotals } from "./calcTotals";
 import StepsBar from "./StepsBar";
+import { API_URL } from "@/lib/api";
 
 function formatPrice(value: number) {
     return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -112,7 +113,7 @@ function SummaryPanel({ items, totalItems, subtotal, shipping, tax, discount, to
         setPromoLoading(true);
         setPromoError("");
         try {
-            const { data } = await axios.post("http://localhost:2000/promos/validate", {
+            const { data } = await axios.post(`${API_URL}/promos/validate`, {
                 code: promoCode.trim(),
                 subtotal,
             });
@@ -394,7 +395,7 @@ export default function CheckoutPage() {
         setPlacing(true);
         setPlaceError("");
         try {
-            const { data } = await axios.post("http://localhost:2000/orders", { shipping }, { withCredentials: true });
+            const { data } = await axios.post(`${API_URL}/orders`, { shipping }, { withCredentials: true });
             setOrderNumber(data.orderNumber);
             setOrderTotal(data.total);
             setOrderItems(items);

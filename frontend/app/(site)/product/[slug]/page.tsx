@@ -5,6 +5,7 @@ import axios from "axios";
 import ProductDetail, { type ProductDoc } from "@/components/shop/ProductDetail";
 import ProductCard from "@/components/shop/ProductCard";
 import type { ShopProduct } from "@/components/shop/ProductCard";
+import { API_URL } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ type ProductPageProps = {
 
 async function getProduct(slug: string): Promise<ProductDoc | null> {
     try {
-        const res = await axios.get<ProductDoc>(`http://localhost:2000/products/${slug}`, {
+        const res = await axios.get<ProductDoc>(`${API_URL}/products/${slug}`, {
             timeout: 6000,
         });
         return res.data;
@@ -26,7 +27,7 @@ async function getProduct(slug: string): Promise<ProductDoc | null> {
 async function getRelated(slug: string): Promise<ShopProduct[]> {
     try {
         const res = await axios.get<ShopProduct[]>(
-            `http://localhost:2000/products/related/${slug}`,
+            `${API_URL}/products/related/${slug}`,
             { timeout: 6000 },
         );
         return res.data;

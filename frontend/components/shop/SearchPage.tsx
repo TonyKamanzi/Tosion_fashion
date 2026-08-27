@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import ProductCard, { type ShopProduct } from "./ProductCard";
+import { API_URL } from "@/lib/api";
 
 const SORT_OPTIONS = [
     { key: "newest", label: "Newest" },
@@ -48,7 +49,7 @@ export default function SearchPage() {
         setLoading(true);
         setSearched(true);
         try {
-            const { data } = await axios.get<ApiResponse>("http://localhost:2000/products", {
+            const { data } = await axios.get<ApiResponse>(`${API_URL}/products`, {
                 params: { q: q.trim(), sort: s, page: p, limit: 18 },
             });
             setProducts(data.items);

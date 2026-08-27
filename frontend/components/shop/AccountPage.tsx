@@ -6,6 +6,7 @@ import Image from "next/image";
 import axios from "axios";
 import { toast } from "sonner";
 import { useCustomerSession } from "./CustomerSessionContext";
+import { API_URL } from "@/lib/api";
 
 type OrderItem = {
     name: string;
@@ -252,7 +253,7 @@ export default function AccountPage() {
 
     const fetchOrders = useCallback(async () => {
         try {
-            const { data } = await axios.get<{ items: Order[] }>("http://localhost:2000/orders/mine", { withCredentials: true });
+            const { data } = await axios.get<{ items: Order[] }>(`${API_URL}/orders/mine`, { withCredentials: true });
             setOrders(data.items);
         } catch {
             setOrdersError(true);

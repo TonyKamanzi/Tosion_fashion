@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useCart, type CartItem } from "./CartContext";
 import { calcTotals } from "./calcTotals";
 import StepsBar from "./StepsBar";
+import { API_URL } from "@/lib/api";
 
 function formatPrice(value: number) {
     return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -135,7 +136,7 @@ export default function BagPage() {
         setPromoLoading(true);
         setPromoError("");
         try {
-            const { data } = await axios.post("http://localhost:2000/promos/validate", {
+            const { data } = await axios.post(`${API_URL}/promos/validate`, {
                 code: promoCode.trim(),
                 subtotal,
             });

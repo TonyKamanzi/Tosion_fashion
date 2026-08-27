@@ -5,6 +5,7 @@ import Image from "next/image";
 import axios from "axios";
 import { useCart } from "./CartContext";
 import { useWishlist } from "./WishlistContext";
+import { API_URL } from "@/lib/api";
 
 export type ProductDoc = {
     _id: string;
@@ -74,7 +75,7 @@ export default function ProductDetail({ product }: Props) {
     const fetchReviews = useCallback(async () => {
         try {
             const { data } = await axios.get<ReviewsResponse>(
-                `http://localhost:2000/reviews/product/${product._id}`
+                `${API_URL}/reviews/product/${product._id}`
             );
             setReviews(data.items);
             setAverageRating(data.averageRating);
@@ -508,7 +509,7 @@ export default function ProductDetail({ product }: Props) {
                                             setReviewSubmitting(true);
                                             setReviewMessage("");
                                             try {
-                                                await axios.post("http://localhost:2000/reviews", {
+                                                await axios.post(`${API_URL}/reviews`, {
                                                     product: product._id,
                                                     name: reviewForm.name,
                                                     rating: reviewForm.rating,

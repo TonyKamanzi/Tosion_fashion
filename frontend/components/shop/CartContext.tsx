@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useReducer, useRef, type ReactNode } from "react";
 import axios from "axios";
 import { useCustomerSession } from "./CustomerSessionContext";
+import { API_URL } from "@/lib/api";
 
 export type CartItem = {
     _id: string;
@@ -155,7 +156,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     items: CartItem[];
                     saved: CartItem[];
                     promo: PromoInfo;
-                }>("http://localhost:2000/cart", { withCredentials: true });
+                }>(`${API_URL}/cart`, { withCredentials: true });
 
                 const localState = loadState();
                 const serverHasItems = data.items && data.items.length > 0;
@@ -166,11 +167,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     dispatch({ type: "LOAD_SERVER", items: data.items, saved: data.saved || [], promo: data.promo || null });
                 } else if (localHasItems && !serverHasItems) {
                     // local has items, server is empty — push to server
-                    await axios.put("http://localhost:2000/cart", localState, { withCredentials: true });
+                    await axios.put(`${API_URL}/cart`, localState, { withCredentials: true });
                 } else if (serverHasItems && localHasItems) {
                     // both have items — server wins
                     dispatch({ type: "LOAD_SERVER", items: data.items, saved: data.saved || [], promo: data.promo || null });
-                    await axios.put("http://localhost:2000/cart", {
+                    await axios.put(`${API_URL}/cart`, {
                         items: data.items,
                         saved: data.saved || [],
                         promo: data.promo || null,
@@ -187,7 +188,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(() => {
-            void axios.put("http://localhost:2000/cart", state, { withCredentials: true });
+            void axios.put(`${API_URL}/cart`, state, { withCredentials: true });
         }, 500);
 
         return () => {
