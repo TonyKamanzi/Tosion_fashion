@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type OrderItem = {
     name: string;
@@ -65,8 +66,8 @@ export default function OrdersManager() {
     const fetchOrders = useCallback(async () => {
         try {
             const url = filter
-                ? `http://localhost:2000/orders?status=${filter}`
-                : "http://localhost:2000/orders";
+                ? `${API_URL}/orders?status=${filter}`
+                : `${API_URL}/orders`;
             const { data } = await axios.get<{ items: Order[] }>(url, { withCredentials: true });
             setOrders(data.items);
         } catch {
@@ -84,7 +85,7 @@ export default function OrdersManager() {
         setUpdating(orderId);
         try {
             await axios.put(
-                `http://localhost:2000/orders/${orderId}/status`,
+                `${API_URL}/orders/${orderId}/status`,
                 { status: newStatus },
                 { withCredentials: true }
             );

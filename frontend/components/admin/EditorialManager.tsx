@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Panel from "./Panel";
+import { API_URL } from "@/lib/api";
 
 // shape returned by GET /editorial
 type EditorialContent = {
@@ -58,7 +59,7 @@ export default function EditorialManager() {
 
     useEffect(() => {
         axios
-            .get<EditorialContent>("http://localhost:2000/editorial", { timeout: 5000 })
+            .get<EditorialContent>(`${API_URL}/editorial`, { timeout: 5000 })
             .then((res) => setForm(res.data))
             .catch(() => setNotice("Could not load editorial content."))
             .finally(() => setLoading(false));
@@ -72,7 +73,7 @@ export default function EditorialManager() {
         setNotice("");
 
         try {
-            await axios.put("http://localhost:2000/editorial", form, {
+            await axios.put(`${API_URL}/editorial`, form, {
                 withCredentials: true,
             });
             setNotice("Saved. The homepage now shows this content.");

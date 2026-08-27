@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Panel from "./Panel";
+import { API_URL } from "@/lib/api";
 
 type WeekData = { label: string; height: number; revenue: number };
 
@@ -13,7 +14,7 @@ export default function RevenueChart() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`http://localhost:2000/admin/revenue-chart`, { withCredentials: true });
+                const res = await axios.get(`${API_URL}/admin/revenue-chart`, { withCredentials: true });
                 setWeeks(res.data.items);
             } catch {
                 // silent

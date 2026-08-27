@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import Panel from "./Panel";
+import { API_URL } from "@/lib/api";
 
 type CategoryOption = {
     _id: string;
@@ -61,8 +62,8 @@ const EMPTY_DRAFT: ProductDraft = {
     enabled: true,
 };
 
-const API = "http://localhost:2000/products";
-const CATEGORIES_API = "http://localhost:2000/categories";
+const API = `${API_URL}/products`;
+const CATEGORIES_API = `${API_URL}/categories`;
 
 const labelClass = "block font-mono text-[10px] tracking-[0.14em] uppercase text-sage mb-2";
 const inputClass =

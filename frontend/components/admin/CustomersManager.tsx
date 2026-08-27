@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type Customer = {
     _id: string;
@@ -20,7 +21,7 @@ export default function CustomersManager() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`http://localhost:2000/admin/customers`, { withCredentials: true });
+                const res = await axios.get(`${API_URL}/admin/customers`, { withCredentials: true });
                 setCustomers(res.data.items);
             } catch {
                 // silent

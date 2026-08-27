@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import axios from "axios";
 import { useAdminSession } from "./AdminSessionContext";
+import { API_URL } from "@/lib/api";
 
 type NavItem = {
     label: string;
@@ -121,7 +122,7 @@ export default function Sidebar() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`http://localhost:2000/admin/stats`, { withCredentials: true });
+                const res = await axios.get(`${API_URL}/admin/stats`, { withCredentials: true });
                 setPendingOrders(res.data.pendingOrders || 0);
             } catch {
                 // silent
@@ -137,7 +138,7 @@ export default function Sidebar() {
     const handleLogout = async () => {
         try {
             await axios.post(
-                "http://localhost:2000/auth/logout",
+                `${API_URL}/auth/logout`,
                 {},
                 { withCredentials: true }
             );

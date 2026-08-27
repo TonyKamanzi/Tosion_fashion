@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Panel from "./Panel";
+import { API_URL } from "@/lib/api";
 
 type MarqueeItem = {
     _id?: string;
@@ -77,7 +78,7 @@ export default function HeroManager() {
 
     useEffect(() => {
         axios
-            .get<HeroContent>("http://localhost:2000/hero", { timeout: 5000 })
+            .get<HeroContent>(`${API_URL}/hero`, { timeout: 5000 })
             .then((res) =>
                 setForm({
                     ...res.data,
@@ -122,7 +123,7 @@ export default function HeroManager() {
         setNotice("");
 
         try {
-            await axios.put("http://localhost:2000/hero", form, {
+            await axios.put(`${API_URL}/hero`, form, {
                 withCredentials: true,
             });
             setNotice("Saved. The homepage now shows this content.");

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactElement, type ReactNode } from "
 import Link from "next/link";
 import axios from "axios";
 import { useAdminSession } from "./AdminSessionContext";
+import { API_URL } from "@/lib/api";
 
 type TopbarProps = {
     eyebrow?: string;
@@ -70,7 +71,7 @@ export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
     // fetch notifications
     const fetchNotifications = async () => {
         try {
-            const res = await axios.get("http://localhost:2000/notifications", { withCredentials: true });
+            const res = await axios.get(`${API_URL}/notifications`, { withCredentials: true });
             setNotifications(res.data.items);
             setUnreadCount(res.data.unreadCount);
         } catch {
@@ -81,7 +82,7 @@ export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
     useEffect(() => {
         const load = async () => {
             try {
-                const res = await axios.get("http://localhost:2000/notifications", { withCredentials: true });
+                const res = await axios.get(`${API_URL}/notifications`, { withCredentials: true });
                 setNotifications(res.data.items);
                 setUnreadCount(res.data.unreadCount);
             } catch {
@@ -109,7 +110,7 @@ export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
 
     const handleMarkAllRead = async () => {
         try {
-            await axios.put("http://localhost:2000/notifications/read", {}, { withCredentials: true });
+            await axios.put(`${API_URL}/notifications/read`, {}, { withCredentials: true });
             setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
             setUnreadCount(0);
         } catch {
@@ -130,7 +131,7 @@ export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
     const handleNotificationClick = (n: Notification) => {
         setNotifOpen(false);
         if (!n.read) {
-            void axios.put(`http://localhost:2000/notifications/${n._id}/read`, {}, { withCredentials: true });
+            void axios.put(`${API_URL}/notifications/${n._id}/read`, {}, { withCredentials: true });
             setNotifications((prev) => prev.map((x) => x._id === n._id ? { ...x, read: true } : x));
             setUnreadCount((prev) => Math.max(0, prev - 1));
         }

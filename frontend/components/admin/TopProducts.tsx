@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 import Panel from "./Panel";
+import { API_URL } from "@/lib/api";
 
 type Product = {
     name: string;
@@ -20,7 +21,7 @@ export default function TopProducts() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`http://localhost:2000/admin/top-products`, { withCredentials: true });
+                const res = await axios.get(`${API_URL}/admin/top-products`, { withCredentials: true });
                 setProducts(res.data.items);
             } catch {
                 // silent

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Panel from "./Panel";
+import { API_URL } from "@/lib/api";
 
 // shape returned by GET /newsletter
 type NewsletterContent = {
@@ -56,7 +57,7 @@ export default function NewsletterManager() {
 
     useEffect(() => {
         axios
-            .get<NewsletterContent>("http://localhost:2000/newsletter", { timeout: 5000 })
+            .get<NewsletterContent>(`${API_URL}/newsletter`, { timeout: 5000 })
             .then((res) => setForm(res.data))
             .catch(() => setNotice("Could not load newsletter content."))
             .finally(() => setLoading(false));
@@ -70,7 +71,7 @@ export default function NewsletterManager() {
         setNotice("");
 
         try {
-            await axios.put("http://localhost:2000/newsletter", form, {
+            await axios.put(`${API_URL}/newsletter`, form, {
                 withCredentials: true,
             });
             setNotice("Saved. The homepage now shows this content.");

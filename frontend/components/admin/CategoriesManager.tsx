@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Panel from "./Panel";
+import { API_URL } from "@/lib/api";
 
 type CategoryRow = {
     _id: string;
@@ -35,7 +36,7 @@ const labelClass = "block font-mono text-[10px] tracking-[0.14em] uppercase text
 const inputClass =
     "w-full bg-bone-2 border border-ink/15 py-2.5 px-4 rounded-sm font-sans text-[13.5px] text-ink outline-none transition-colors focus:border-wine disabled:opacity-50";
 
-const API = "http://localhost:2000/categories";
+const API = `${API_URL}/categories`;
 
 function draftOf(item: CategoryRow): Draft {
     return {
@@ -62,7 +63,7 @@ export default function CategoriesManager() {
     useEffect(() => {
         Promise.all([
             axios.get<CategoryRow[]>(API, { timeout: 5000 }),
-            axios.get<SectionHeader>("http://localhost:2000/categories/header", { timeout: 5000 }),
+            axios.get<SectionHeader>(`${API_URL}/categories/header`, { timeout: 5000 }),
         ])
             .then(([itemsRes, headerRes]) => {
                 setItems(itemsRes.data);
@@ -225,7 +226,7 @@ export default function CategoriesManager() {
 
         try {
             const res = await axios.put<SectionHeader>(
-                "http://localhost:2000/categories/header",
+                `${API_URL}/categories/header`,
                 headerDraft,
                 { withCredentials: true }
             );

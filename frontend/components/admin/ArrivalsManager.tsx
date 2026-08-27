@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Panel from "./Panel";
+import { API_URL } from "@/lib/api";
 
 type ArrivalRow = {
     _id: string;
@@ -36,7 +37,7 @@ const labelClass = "block font-mono text-[10px] tracking-[0.14em] uppercase text
 const inputClass =
     "w-full bg-bone-2 border border-ink/15 py-2.5 px-4 rounded-sm font-sans text-[13.5px] text-ink outline-none transition-colors focus:border-wine disabled:opacity-50";
 
-const API = "http://localhost:2000/arrivals";
+const API = `${API_URL}/arrivals`;
 
 function draftOf(item: ArrivalRow): Draft {
     return {
@@ -64,7 +65,7 @@ export default function ArrivalsManager() {
     useEffect(() => {
         Promise.all([
             axios.get<ArrivalRow[]>(API, { timeout: 5000 }),
-            axios.get<SectionHeader>("http://localhost:2000/arrivals/header", { timeout: 5000 }),
+            axios.get<SectionHeader>(`${API_URL}/arrivals/header`, { timeout: 5000 }),
         ])
             .then(([itemsRes, headerRes]) => {
                 setItems(itemsRes.data);
@@ -228,7 +229,7 @@ export default function ArrivalsManager() {
 
         try {
             const res = await axios.put<SectionHeader>(
-                "http://localhost:2000/arrivals/header",
+                `${API_URL}/arrivals/header`,
                 headerDraft,
                 { withCredentials: true }
             );

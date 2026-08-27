@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Panel from "./Panel";
 import StatusBadge from "./StatusBadge";
+import { API_URL } from "@/lib/api";
 
 type OrderItem = {
     name: string;
@@ -40,7 +41,7 @@ export default function OrdersTable() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`http://localhost:2000/orders`, { withCredentials: true });
+                const res = await axios.get(`${API_URL}/orders`, { withCredentials: true });
                 setOrders((res.data.items || []).slice(0, 6));
             } catch {
                 // silent

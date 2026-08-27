@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type PromoDoc = {
     _id: string;
@@ -38,7 +39,7 @@ export default function DiscountManager() {
 
     const fetchItems = useCallback(async () => {
         try {
-            const { data } = await axios.get<{ items: PromoDoc[] }>("http://localhost:2000/promos");
+            const { data } = await axios.get<{ items: PromoDoc[] }>(`${API_URL}/promos`);
             setItems(data.items);
         } catch {
             setNotice("Failed to load promo codes.");
@@ -70,10 +71,10 @@ export default function DiscountManager() {
                 enabled: form.enabled,
             };
             if (editingId) {
-                await axios.put(`http://localhost:2000/promos/${editingId}`, payload, { withCredentials: true });
+                await axios.put(`${API_URL}/promos/${editingId}`, payload, { withCredentials: true });
                 setNotice("Promo code updated.");
             } else {
-                await axios.post("http://localhost:2000/promos", payload, { withCredentials: true });
+                await axios.post(`${API_URL}/promos`, payload, { withCredentials: true });
                 setNotice("Promo code created.");
             }
             resetForm();
@@ -102,7 +103,7 @@ export default function DiscountManager() {
     const handleDelete = async (id: string) => {
         if (!window.confirm("Delete this promo code?")) return;
         try {
-            await axios.delete(`http://localhost:2000/promos/${id}`, { withCredentials: true });
+            await axios.delete(`${API_URL}/promos/${id}`, { withCredentials: true });
             setNotice("Promo code deleted.");
             void fetchItems();
         } catch {
@@ -113,7 +114,7 @@ export default function DiscountManager() {
     const handleToggle = async (item: PromoDoc) => {
         try {
             await axios.put(
-                `http://localhost:2000/promos/${item._id}`,
+                `${API_URL}/promos/${item._id}`,
                 { enabled: !item.enabled },
                 { withCredentials: true }
             );

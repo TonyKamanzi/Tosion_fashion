@@ -6,6 +6,7 @@ import Sidebar from "@/components/admin/Sidebar";
 import Topbar from "@/components/admin/Topbar";
 import AdminSessionProvider, { type AdminUser } from "@/components/admin/AdminSessionContext";
 import { Toaster } from "sonner";
+import { API_URL } from "@/lib/api";
 
 export const metadata: Metadata = {
     title: "Dashboard — Tosion Admin",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 async function getSessionUser(): Promise<AdminUser | null> {
     try {
         const cookieStore = await cookies();
-        const res = await axios.get<AdminUser>("http://localhost:2000/auth/me", {
+        const res = await axios.get<AdminUser>(`${API_URL}/auth/me`, {
             headers: { Cookie: cookieStore.toString() },
         });
         return res.data;

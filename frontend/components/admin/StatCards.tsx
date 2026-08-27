@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactElement } from "react";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type Stat = {
     label: string;
@@ -45,7 +46,7 @@ export default function StatCards() {
     useEffect(() => {
         void (async () => {
             try {
-                const res = await axios.get(`http://localhost:2000/admin/stats`, { withCredentials: true });
+                const res = await axios.get(`${API_URL}/admin/stats`, { withCredentials: true });
                 const d = res.data;
                 setStats([
                     {

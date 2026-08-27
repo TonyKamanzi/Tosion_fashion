@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type Stats = {
     revenue: { value: number; delta: number };
@@ -24,9 +25,9 @@ export default function AnalyticsManager() {
         void (async () => {
             try {
                 const [statsRes, chartRes, productsRes] = await Promise.all([
-                    axios.get("http://localhost:2000/admin/stats", { withCredentials: true }),
-                    axios.get("http://localhost:2000/admin/revenue-chart", { withCredentials: true }),
-                    axios.get("http://localhost:2000/admin/top-products", { withCredentials: true }),
+                    axios.get(`${API_URL}/admin/stats`, { withCredentials: true }),
+                    axios.get(`${API_URL}/admin/revenue-chart`, { withCredentials: true }),
+                    axios.get(`${API_URL}/admin/top-products`, { withCredentials: true }),
                 ]);
                 setStats(statsRes.data);
                 setChart(chartRes.data.items);
