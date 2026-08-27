@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/api";
 
 // Which form is currently visible: "login" (Sign In) or "register" (Create Account)
 type Tab = "login" | "register";
@@ -38,7 +39,7 @@ export default function Auth() {
 
         try {
             await axios.post(
-                "http://localhost:2000/auth/register",
+                `${API_URL}/auth/register`,
                 { firstName, lastName, email, password },
                 { withCredentials: true }
             );
@@ -60,7 +61,7 @@ export default function Auth() {
 
         try {
             const res = await axios.post<SessionUser>(
-                "http://localhost:2000/auth/login",
+                `${API_URL}/auth/login`,
                 { email: loginEmail, password: loginPassword },
                 { withCredentials: true }
             );
@@ -238,7 +239,7 @@ export default function Auth() {
                                 </div>
 
                                 {/* Social login buttons (Google + Apple) — styling only for now */}
-                                <a  href="http://localhost:2000/auth/google"
+                                <a href={`${API_URL}/auth/google`}
                                     type="button"
                                     className="flex items-center justify-center gap-2.5 bg-transparent text-ink w-full py-3.5 px-5 mb-3 font-sans text-[13.5px] font-medium border border-ink cursor-pointer transition-all hover:bg-ink hover:text-bone"
                                 >

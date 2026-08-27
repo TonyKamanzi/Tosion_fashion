@@ -1,5 +1,6 @@
 import Image from "next/image";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type EditorialContent = {
     imageUrl: string;
@@ -22,7 +23,7 @@ const FALLBACK_EDITORIAL: EditorialContent = {
 async function getEditorial(): Promise<EditorialContent> {
     try {
         const res = await axios.get<EditorialContent>(
-            "http://localhost:2000/editorial",
+            `${API_URL}/editorial`,
             { timeout: 4000 }
         );
         return res.data;

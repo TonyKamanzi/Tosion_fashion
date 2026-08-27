@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type CategoryItem = {
     label: string;
@@ -78,7 +79,7 @@ const FALLBACK_HEADER = {
 
 async function getCategories(): Promise<CategoryItem[]> {
     try {
-        const res = await axios.get<CategoryItem[]>("http://localhost:2000/categories", {
+        const res = await axios.get<CategoryItem[]>(`${API_URL}/categories`, {
             timeout: 4000,
         });
         return res.data;
@@ -92,7 +93,7 @@ async function getHeader(): Promise<{ title: string; description: string }> {
         const res = await axios.get<{
             title: string;
             description: string;
-        }>("http://localhost:2000/categories/header", { timeout: 4000 });
+        }>(`${API_URL}/categories/header`, { timeout: 4000 });
         return res.data;
     } catch {
         return FALLBACK_HEADER;

@@ -1,5 +1,6 @@
 import axios from "axios";
 import NewsletterForm from "./NewsletterForm";
+import { API_URL } from "@/lib/api";
 
 type NewsletterContent = {
     title: string;
@@ -19,7 +20,7 @@ const FALLBACK_NEWSLETTER: NewsletterContent = {
 async function getNewsletter(): Promise<NewsletterContent> {
     try {
         const res = await axios.get<NewsletterContent>(
-            "http://localhost:2000/newsletter",
+            `${API_URL}/newsletter`,
             { timeout: 4000 }
         );
         return res.data;

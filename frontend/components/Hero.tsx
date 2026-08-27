@@ -1,5 +1,6 @@
 import Image from "next/image";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type MarqueeItem = {
     text: string;
@@ -44,7 +45,7 @@ const FALLBACK_HERO_CONTENT: HeroContent = {
 
 async function getHeroContent(): Promise<HeroContent> {
     try {
-        const res = await axios.get<HeroContent>("http://localhost:2000/hero", {
+        const res = await axios.get<HeroContent>(`${API_URL}/hero`, {
             timeout: 4000,
         });
         return res.data;

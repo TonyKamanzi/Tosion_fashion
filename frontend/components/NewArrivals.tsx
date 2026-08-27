@@ -1,5 +1,6 @@
 import Image from "next/image";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 type ArrivalItem = {
     src: string;
@@ -59,7 +60,7 @@ const FALLBACK_HEADER = {
 
 async function getArrivals(): Promise<ArrivalItem[]> {
     try {
-        const res = await axios.get<ArrivalItem[]>("http://localhost:2000/arrivals", {
+        const res = await axios.get<ArrivalItem[]>(`${API_URL}/arrivals`, {
             timeout: 4000,
         });
         return res.data;
@@ -73,7 +74,7 @@ async function getHeader(): Promise<{ title: string; description: string }> {
         const res = await axios.get<{
             title: string;
             description: string;
-        }>("http://localhost:2000/arrivals/header", { timeout: 4000 });
+        }>(`${API_URL}/arrivals/header`, { timeout: 4000 });
         return res.data;
     } catch {
         return FALLBACK_HEADER;
