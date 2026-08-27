@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { useAdminSession } from "./AdminSessionContext";
@@ -37,7 +37,7 @@ function timeAgo(dateStr: string): string {
     return `${Math.floor(diff / 86400)}d ago`;
 }
 
-const NOTIF_ICONS: Record<string, JSX.Element> = {
+const NOTIF_ICONS: Record<string, ReactElement> = {
     new_order: (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L22 6H6" /><circle cx="9" cy="21" r="1" /><circle cx="18" cy="21" r="1" /></svg>
     ),

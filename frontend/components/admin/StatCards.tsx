@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import axios from "axios";
 
 type Stat = {
@@ -8,10 +8,10 @@ type Stat = {
     value: string;
     delta: string;
     trend: "up" | "down";
-    icon: JSX.Element;
+    icon: ReactElement;
 };
 
-const icons: { [k: string]: JSX.Element } = {
+const icons: { [k: string]: ReactElement } = {
     revenue: (
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
     ),
