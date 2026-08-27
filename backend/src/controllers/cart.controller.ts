@@ -95,8 +95,13 @@ function toClientItem(item: {
     price: item.price,
     imageUrl: item.imageUrl,
     imageAltUrl: item.imageAltUrl,
-    category: item.category,
-    selectedColor: item.selectedColor,
+
+    // Convert undefined to null
+    category: item.category ?? null,
+
+    // Convert undefined to null
+    selectedColor: item.selectedColor ?? null,
+
     selectedSize: item.selectedSize,
     qty: item.qty,
   };
