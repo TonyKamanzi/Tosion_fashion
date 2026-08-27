@@ -127,6 +127,44 @@ export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
         }
     };
 
+    const handleNotificationClick = (n: Notification) => {
+        setNotifOpen(false);
+        if (!n.read) {
+            void axios.put(`http://localhost:2000/notifications/${n._id}/read`, {}, { withCredentials: true });
+            setNotifications((prev) => prev.map((x) => x._id === n._id ? { ...x, read: true } : x));
+            setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+    };
+
+    const renderNotification = (n: Notification) => {
+        const content = (
+            <>
+                <span className="mt-0.5 shrink-0 text-sage">
+                    {NOTIF_ICONS[n.type] || NOTIF_ICONS.system}
+                </span>
+                <div className="flex-1 min-w-0">
+                    <p className="text-[12.5px] font-medium leading-snug">{n.title}</p>
+                    <p className="text-[11px] text-sage leading-snug mt-0.5">{n.message}</p>
+                    <span className="font-mono text-[9.5px] text-sage/70 mt-1 block">{timeAgo(n.createdAt)}</span>
+                </div>
+                {!n.read && (
+                    <span className="w-2 h-2 rounded-full bg-wine shrink-0 mt-1.5"></span>
+                )}
+            </>
+        );
+        const onClick = () => void handleNotificationClick(n);
+        const className = `flex items-start gap-3 px-4 py-3 border-b border-ink/10 last:border-b-0 transition-colors hover:bg-bone-2/50 ${!n.read ? "bg-bone-2/30" : ""} ${n.href ? "cursor-pointer" : ""}`;
+        return n.href ? (
+            <Link key={n._id} href={n.href} onClick={onClick} className={className}>
+                {content}
+            </Link>
+        ) : (
+            <div key={n._id} onClick={onClick} className={className}>
+                {content}
+            </div>
+        );
+    };
+
     return (
         <div className="flex items-center justify-between flex-wrap gap-5 mb-8.5">
             <div>
@@ -195,37 +233,7 @@ export default function Topbar({ eyebrow = "Overview", title }: TopbarProps) {
                                 ) : notifications.length === 0 ? (
                                     <p className="px-4 py-8 text-center text-[12px] text-sage">No notifications yet</p>
                                 ) : (
-                                    notifications.map((n) => {
-                                        const Wrapper = n.href ? Link : "div";
-                                        const wrapperProps = n.href ? { href: n.href } : {};
-                                        return (
-                                            <Wrapper
-                                                key={n._id}
-                                                {...wrapperProps}
-                                                onClick={() => {
-                                                    setNotifOpen(false);
-                                                    if (!n.read) {
-                                                        void axios.put(`http://localhost:2000/notifications/${n._id}/read`, {}, { withCredentials: true });
-                                                        setNotifications((prev) => prev.map((x) => x._id === n._id ? { ...x, read: true } : x));
-                                                        setUnreadCount((prev) => Math.max(0, prev - 1));
-                                                    }
-                                                }}
-                                                className={`flex items-start gap-3 px-4 py-3 border-b border-ink/10 last:border-b-0 transition-colors hover:bg-bone-2/50 ${!n.read ? "bg-bone-2/30" : ""} ${n.href ? "cursor-pointer" : ""}`}
-                                            >
-                                                <span className="mt-0.5 shrink-0 text-sage">
-                                                    {NOTIF_ICONS[n.type] || NOTIF_ICONS.system}
-                                                </span>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-[12.5px] font-medium leading-snug">{n.title}</p>
-                                                    <p className="text-[11px] text-sage leading-snug mt-0.5">{n.message}</p>
-                                                    <span className="font-mono text-[9.5px] text-sage/70 mt-1 block">{timeAgo(n.createdAt)}</span>
-                                                </div>
-                                                {!n.read && (
-                                                    <span className="w-2 h-2 rounded-full bg-wine shrink-0 mt-1.5"></span>
-                                                )}
-                                            </Wrapper>
-                                        );
-                                    })
+                                    notifications.map((n) => renderNotification(n))
                                 )}
                             </div>
                         </div>
