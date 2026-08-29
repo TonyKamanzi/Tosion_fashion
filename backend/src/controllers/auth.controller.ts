@@ -2,6 +2,10 @@ import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import { googleClient } from "../config/google.js";
+import {
+  IS_PRODUCTION,
+  SESSION_COOKIE_NAME,
+} from "../config/session.js";
 
 // Session-safe user shape (never includes password)
 type SafeUser = {
@@ -137,7 +141,11 @@ export const logout = async (req: Request, res: Response) => {
         });
       }
 
-      res.clearCookie("connect.sid");
+      res.clearCookie(SESSION_COOKIE_NAME, {
+        httpOnly: true,
+        secure: IS_PRODUCTION,
+        sameSite: IS_PRODUCTION ? "none" : "lax",
+      });
 
       res.status(200).json({
         message: "Logged out successfully",

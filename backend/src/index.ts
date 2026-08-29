@@ -8,6 +8,8 @@ import MongoStore from "connect-mongo";
 
 import connectDB from "./config/db.js";
 
+import { IS_PRODUCTION, SESSION_COOKIE_NAME } from "./config/session.js";
+
 import authRoutes from "./routes/auth.routes.js";
 import heroRoutes from "./routes/hero.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
@@ -86,11 +88,18 @@ app.use(
 // SESSION
 // =====================================================
 
+// Requests arrive through Cloudflare and Render's proxy; without this the
+// server sees plain HTTP and express-session suppresses the Secure session
+// cookie entirely (no Set-Cookie), which silently logs users out.
+app.set("trust proxy", 1);
+
 app.use(
   session({
-    name: "sessionId",
+    name: SESSION_COOKIE_NAME,
 
     secret: SESSION_SECRET,
+
+    proxy: true,
 
     resave: false,
 
@@ -105,11 +114,10 @@ app.use(
       httpOnly: true,
 
       // Render uses HTTPS in production
-      secure: process.env.NODE_ENV === "production",
+      secure: IS_PRODUCTION,
 
       // Important for frontend/backend on different domains
-      sameSite:
-        process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: IS_PRODUCTION ? "none" : "lax",
 
       maxAge: 1000 * 60 * 60 * 24,
     },
