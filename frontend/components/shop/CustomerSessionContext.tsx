@@ -37,8 +37,12 @@ export function CustomerSessionProvider({ children }: { children: ReactNode }) {
                 withCredentials: true,
             });
             setUser(data);
-        } catch {
-            setUser(null);
+        } catch (err) {
+            // Only a rejected session clears the user; transient network errors
+            // must not visually log someone out.
+            if (axios.isAxiosError(err) && err.response?.status === 401) {
+                setUser(null);
+            }
         }
     }, []);
 
