@@ -120,31 +120,33 @@ export default async function Category() {
                 </div>
             </div>
 
-            <div className="grid gap-0.5 grid-cols-1 min-[900px]:grid-cols-[1.3fr_1fr_1fr]">
-                {categories.map((cat) => (
-                    <Link
-                        key={cat.slug}
-                        href={`/shop/${cat.slug}`}
-                        className="group relative overflow-hidden bg-ink h-72 min-[900px]:h-[35vh] min-[900px]:min-h-65 block"
-                    >
-                        <Image
-                            src={cat.imageUrl}
-                            alt={cat.imageAlt}
-                            fill
-                            sizes="(min-width: 900px) 33vw, 100vw"
-                            className="object-cover object-center grayscale-20 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.08]"
-                        />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_40%,rgba(0,0,0,0.55)_100%)]" />
-                        <div className="absolute left-6 bottom-6 z-2 text-bone">
-                            <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone-2 block mb-1.5">
-                                {cat.eyebrow}
-                            </span>
-                            <h3 className="font-display font-medium text-[26px] leading-[1.05] tracking-[-0.01em]">
-                                {cat.label}
-                            </h3>
-                        </div>
-                    </Link>
-                ))}
+            <div className="px-[5vw]">
+                <div className="grid gap-0.5 grid-cols-1 min-[900px]:grid-cols-[1.3fr_1fr_1fr]">
+                    {categories.map((cat) => (
+                        <Link
+                            key={cat.slug}
+                            href={`/shop/${cat.slug}`}
+                            className="group relative overflow-hidden bg-ink h-72 min-[900px]:h-[35vh] min-[900px]:min-h-65 block"
+                        >
+                            <Image
+                                src={cat.imageUrl}
+                                alt={cat.imageAlt}
+                                fill
+                                sizes="(min-width: 900px) 33vw, 100vw"
+                                className="object-contain grayscale-20 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.08]"
+                            />
+                            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_40%,rgba(0,0,0,0.55)_100%)]" />
+                            <div className="absolute left-6 bottom-6 z-2 text-bone">
+                                <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone-2 block mb-1.5">
+                                    {cat.eyebrow}
+                                </span>
+                                <h3 className="font-display font-medium text-[26px] leading-[1.05] tracking-[-0.01em]">
+                                    {cat.label}
+                                </h3>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </div>
     );
