@@ -113,44 +113,30 @@ const navGroupsBuilder = (pendingOrders: number): { label: string; items: NavIte
     },
 ];
 
-export default function Sidebar() {
-    const pathname = usePathname();
-    const router = useRouter();
-    const sessionUser = useAdminSession();
-    const [pendingOrders, setPendingOrders] = useState(0);
+type SidebarBodyProps = {
+    navGroups: { label: string; items: NavItem[] }[];
+    name: string;
+    role: string;
+    pathname: string;
+    onClose: () => void;
+    onLogout: () => void;
+};
 
-    useEffect(() => {
-        void (async () => {
-            try {
-                const res = await axios.get(`${API_URL}/admin/stats`, { withCredentials: true });
-                setPendingOrders(res.data.pendingOrders || 0);
-            } catch {
-                // silent
-            }
-        })();
-    }, []);
-
-    const navGroups = navGroupsBuilder(pendingOrders);
-
-    const name = `${sessionUser.firstName} ${sessionUser.lastName}`;
-    const role = sessionUser.role === "admin" ? "Store Admin" : sessionUser.role;
-
-    const handleLogout = async () => {
-        try {
-            await axios.post(
-                `${API_URL}/auth/logout`,
-                {},
-                { withCredentials: true }
-            );
-        } finally {
-            router.replace("/account");
-        }
-    };
-
+function SidebarBody({ navGroups, name, role, pathname, onClose, onLogout }: SidebarBodyProps) {
     return (
-        <aside className="hidden min-[800px]:flex flex-col sticky top-0 h-screen bg-ink text-bone px-5 py-6.5">
-            <div className="font-display font-semibold text-[22px] pt-1.5 px-2 pb-6.5 border-b border-bone/10 mb-5.5">
-                TOSION <span className="text-gold">admin</span>
+        <div className="flex flex-col min-h-full px-5 py-6.5">
+            <div className="flex items-center justify-between pt-1.5 px-2 pb-6.5 border-b border-bone/10 mb-5.5 min-[800px]:block">
+                <div className="font-display font-semibold text-[22px]">
+                    TOSION <span className="text-gold">admin</span>
+                </div>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    aria-label="Close menu"
+                    className="min-[800px]:hidden p-2 -mr-2 text-bone/70 hover:text-bone transition-colors cursor-pointer"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                </button>
             </div>
 
             {navGroups.map((group) => (
@@ -167,6 +153,7 @@ export default function Sidebar() {
                             <Link
                                 key={item.label}
                                 href={item.href}
+                                onClick={onClose}
                                 className={`flex items-center gap-3 py-2.75 px-2.5 rounded-sm text-sm transition-colors duration-200 mb-0.5 hover:bg-bone/5 hover:text-bone ${
                                     isActive ? "bg-wine text-bone" : "text-bone/70"
                                 }`}
@@ -194,7 +181,7 @@ export default function Sidebar() {
                 </div>
                 <button
                     type="button"
-                    onClick={handleLogout}
+                    onClick={onLogout}
                     aria-label="Log out"
                     title="Log out"
                     className="ml-auto p-2 rounded-sm text-bone/50 transition-colors duration-200 hover:text-bone hover:bg-bone/5 cursor-pointer"
@@ -202,6 +189,93 @@ export default function Sidebar() {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
                 </button>
             </div>
-        </aside>
+        </div>
+    );
+}
+
+type SidebarProps = {
+    open?: boolean;
+    onClose?: () => void;
+};
+
+export default function Sidebar({ open = false, onClose = () => {} }: SidebarProps) {
+    const pathname = usePathname();
+    const router = useRouter();
+    const sessionUser = useAdminSession();
+    const [pendingOrders, setPendingOrders] = useState(0);
+
+    useEffect(() => {
+        void (async () => {
+            try {
+                const res = await axios.get(`${API_URL}/admin/stats`, { withCredentials: true });
+                setPendingOrders(res.data.pendingOrders || 0);
+            } catch {
+                // silent
+            }
+        })();
+    }, []);
+
+    // close the mobile drawer with the Escape key
+    useEffect(() => {
+        if (!open) return;
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+        };
+        document.addEventListener("keydown", onKeyDown);
+        return () => document.removeEventListener("keydown", onKeyDown);
+    }, [open, onClose]);
+
+    const navGroups = navGroupsBuilder(pendingOrders);
+
+    const name = `${sessionUser.firstName} ${sessionUser.lastName}`;
+    const role = sessionUser.role === "admin" ? "Store Admin" : sessionUser.role;
+
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                `${API_URL}/auth/logout`,
+                {},
+                { withCredentials: true }
+            );
+        } finally {
+            router.replace("/account");
+        }
+    };
+
+    return (
+        <>
+            {/* Desktop sidebar */}
+            <aside className="hidden min-[800px]:flex sticky top-0 h-screen bg-ink text-bone overflow-y-auto">
+                <SidebarBody
+                    navGroups={navGroups}
+                    name={name}
+                    role={role}
+                    pathname={pathname}
+                    onClose={onClose}
+                    onLogout={() => void handleLogout()}
+                />
+            </aside>
+
+            {/* Mobile drawer */}
+            {open && (
+                <div className="fixed inset-0 z-50 min-[800px]:hidden">
+                    <div
+                        className="animate-fade absolute inset-0 bg-ink/50"
+                        onClick={onClose}
+                        aria-hidden
+                    />
+                    <aside className="animate-slide-in-left absolute left-0 top-0 h-full w-72 max-w-[85vw] bg-ink text-bone overflow-y-auto">
+                        <SidebarBody
+                            navGroups={navGroups}
+                            name={name}
+                            role={role}
+                            pathname={pathname}
+                            onClose={onClose}
+                            onLogout={() => void handleLogout()}
+                        />
+                    </aside>
+                </div>
+            )}
+        </>
     );
 }
