@@ -121,6 +121,19 @@ export default function Header() {
                                             →
                                         </span>
                                     </Link>
+                                    {/* admin panel — visible to admins only */}
+                                    {user.role === "admin" && (
+                                        <Link
+                                            href="/admin"
+                                            onClick={() => setAccountOpen(false)}
+                                            className="w-full text-left px-4 py-3 font-mono text-[11px] tracking-[0.08em] uppercase text-ink hover:text-wine transition-colors flex items-center justify-between group"
+                                        >
+                                            Admin Panel
+                                            <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
+                                                →
+                                            </span>
+                                        </Link>
+                                    )}
                                     {/* logout */}
                                     <button
                                         type="button"
@@ -191,6 +204,16 @@ export default function Header() {
                                 My Account
                                 <span className="absolute left-0 -bottom-1 h-px w-0 bg-wine transition-all duration-300 group-hover:w-full" />
                             </Link>
+                            {user.role === "admin" && (
+                                <Link
+                                    href="/admin"
+                                    onClick={() => setOpen(false)}
+                                    className="group relative w-fit"
+                                >
+                                    Admin Panel
+                                    <span className="absolute left-0 -bottom-1 h-px w-0 bg-wine transition-all duration-300 group-hover:w-full" />
+                                </Link>
+                            )}
                             <Link
                                 href="/wishlist"
                                 onClick={() => setOpen(false)}
