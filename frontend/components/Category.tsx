@@ -133,7 +133,7 @@ export default async function Category() {
                                 alt={cat.imageAlt}
                                 fill
                                 sizes="(min-width: 900px) 33vw, 100vw"
-                                className="object-contain grayscale-20 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.08]"
+                                className="object-cover object-center grayscale-20 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.08]"
                             />
                             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_40%,rgba(0,0,0,0.55)_100%)]" />
                             <div className="absolute left-6 bottom-6 z-2 text-bone">
