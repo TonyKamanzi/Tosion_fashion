@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@theme {
+  /* Colors */
+  --color-bone: #F1EDE4;
+  --color-bone-2: #E8E2D4;
+  --color-ink: #191714;
+  --color-wine: #5C1A21;
+  --color-wine-deep: #420F14;
+  --color-gold: #A6813C;
+  --color-sage: #8B8A7D;
+  --color-good: #5C7A52;
+
+  /* Fonts */
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-display: ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, monospace;
+}
