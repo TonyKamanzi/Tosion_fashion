@@ -3,9 +3,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Dimensions, ScrollView, Text, View } from "react-native";
 
 const CATEGORIES = [
-  { number: "01", label: "Outerwear", image: "https://picsum.photos/id/1011/500/650" },
-  { number: "02", label: "Knitwear", image: "https://picsum.photos/id/1012/500/650" },
-  { number: "03", label: "Accessories", image: "https://picsum.photos/id/103/500/650" },
+  { number: "01", label: "Outerwear", image: require("../../assets/images/placeholders/category-outerwear.png") },
+  { number: "02", label: "Knitwear", image: require("../../assets/images/placeholders/category-knitwear.png") },
+  { number: "03", label: "Accessories", image: require("../../assets/images/placeholders/category-accessories.png") },
 ];
 
 const { width } = Dimensions.get("window");
@@ -37,7 +37,7 @@ export default function CategoryScroller() {
             className="bg-ink overflow-hidden"
           >
             <Image
-              source={{ uri: category.image }}
+              source={category.image}
               contentFit="cover"
               transition={300}
               className="absolute inset-0 h-full w-full"

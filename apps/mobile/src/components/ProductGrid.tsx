@@ -3,10 +3,10 @@ import { Image } from "expo-image";
 import { Dimensions, Text, View } from "react-native";
 
 const PRODUCTS = [
-  { name: "Wool Overcoat", category: "Outerwear", price: "$328", tag: "NEW", image: "https://picsum.photos/id/1025/400/540" },
-  { name: "Ribbed Knit Sweater", category: "Knitwear", price: "$148", tag: null, image: "https://picsum.photos/id/1035/400/540" },
-  { name: "Tailored Trousers", category: "Bottoms", price: "$168", tag: "−20%", image: "https://picsum.photos/id/1050/400/540" },
-  { name: "Leather Crossbody", category: "Accessories", price: "$212", tag: null, image: "https://picsum.photos/id/1074/400/540" },
+  { name: "Wool Overcoat", category: "Outerwear", price: "$328", tag: "NEW", image: require("../../assets/images/placeholders/product-wool-overcoat.png") },
+  { name: "Ribbed Knit Sweater", category: "Knitwear", price: "$148", tag: null, image: require("../../assets/images/placeholders/product-ribbed-knit.png") },
+  { name: "Tailored Trousers", category: "Bottoms", price: "$168", tag: "−20%", image: require("../../assets/images/placeholders/product-tailored-trousers.png") },
+  { name: "Leather Crossbody", category: "Accessories", price: "$212", tag: null, image: require("../../assets/images/placeholders/product-leather-crossbody.png") },
 ];
 
 const { width } = Dimensions.get("window");
@@ -41,7 +41,7 @@ export default function ProductGrid() {
                 <Ionicons name="heart-outline" size={13} color="#191714" />
               </View>
               <Image
-                source={{ uri: product.image }}
+                source={product.image}
                 contentFit="cover"
                 transition={300}
                 className="absolute inset-0 h-full w-full"

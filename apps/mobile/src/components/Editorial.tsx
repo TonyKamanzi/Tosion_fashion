@@ -5,7 +5,7 @@ export default function Editorial() {
   return (
     <View className="relative bg-ink items-center justify-center py-[68px] overflow-hidden">
       <Image
-        source={{ uri: "https://picsum.photos/id/1062/780/700" }}
+        source={require("../../assets/images/placeholders/editorial.png")}
         contentFit="cover"
         transition={300}
         className="absolute inset-0 h-full w-full opacity-40"

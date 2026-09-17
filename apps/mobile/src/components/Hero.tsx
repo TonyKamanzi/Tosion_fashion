@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, Text, View } from "react-native";
 
-const HERO_IMAGE = "https://picsum.photos/id/1027/780/960";
+const HERO_IMAGE = require("../../assets/images/placeholders/hero.png");
 
 export default function Hero() {
   return (
