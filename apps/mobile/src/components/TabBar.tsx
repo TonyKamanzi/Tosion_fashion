@@ -1,32 +1,61 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Text, View } from "react-native";
+import type { ComponentProps } from "react";
+import { Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import type { BottomTabBarProps } from "expo-router/js-tabs";
 
-const TABS = [
-  { label: "Home", icon: "home-outline", active: true },
-  { label: "Search", icon: "search-outline", active: false },
-  { label: "Bag", icon: "bag-outline", active: false },
-  { label: "Account", icon: "person-outline", active: false },
-] as const;
+type IconName = ComponentProps<typeof Ionicons>["name"];
 
-export default function TabBar() {
+const TAB_META: Record<string, { label: string; icon: IconName; activeIcon: IconName }> = {
+  index: { label: "Home", icon: "home-outline", activeIcon: "home" },
+  search: { label: "Search", icon: "search-outline", activeIcon: "search" },
+  bag: { label: "Bag", icon: "bag-outline", activeIcon: "bag" },
+  account: { label: "Account", icon: "person-outline", activeIcon: "person" },
+};
+
+export default function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View className="flex-row bg-[#F1EDE4]/95 border-t border-line px-0 pt-[10px] pb-2">
-      {TABS.map((tab) => (
-        <View key={tab.label} className="flex-1 items-center gap-[4px]">
-          <Ionicons
-            name={tab.icon}
-            size={18}
-            color={tab.active ? "#5C1A21" : "#8B8A7D"}
-          />
-          <Text
-            className={`font-mono text-[9.5px] tracking-[0.03em] ${
-              tab.active ? "text-wine" : "text-sage"
-            }`}
+    <View
+      className="flex-row bg-[#F1EDE4]/95 border-t border-line pt-[10px]"
+      style={{ paddingBottom: insets.bottom + 8 }}
+    >
+      {state.routes.map((route, index) => {
+        const isActive = state.index === index;
+        const meta = TAB_META[route.name] ?? {
+          label: descriptors[route.key]?.options.title ?? route.name,
+          icon: "ellipse-outline",
+          activeIcon: "ellipse-outline",
+        };
+        const color = isActive ? "#5C1A21" : "#8B8A7D";
+
+        return (
+          <Pressable
+            key={route.key}
+            className="flex-1 items-center gap-[2px]"
+            onPress={() => {
+              const event = navigation.emit({
+                type: "tabPress",
+                target: route.key,
+                canPreventDefault: true,
+              });
+              if (!isActive && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            }}
           >
-            {tab.label.toUpperCase()}
-          </Text>
-        </View>
-      ))}
+            <Ionicons name={isActive ? meta.activeIcon : meta.icon} size={18} color={color} />
+            <Text
+              className={`font-mono text-[9.5px] tracking-[0.03em] ${
+                isActive ? "text-wine" : "text-sage"
+              }`}
+            >
+              {meta.label.toUpperCase()}
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }

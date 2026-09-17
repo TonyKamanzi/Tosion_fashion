@@ -6,7 +6,6 @@ import ProductGrid from "@/components/ProductGrid";
 import Editorial from "@/components/Editorial";
 import Newsletter from "@/components/Newsletter";
 import Footer from "@/components/Footer";
-import TabBar from "@/components/TabBar";
 import { ScrollView } from "react-native";
 
 export default function Home() {
@@ -20,7 +19,6 @@ export default function Home() {
       <Editorial />
       <Newsletter />
       <Footer />
-      <TabBar />
     </ScrollView>
   );
 }
