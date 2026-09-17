@@ -8,7 +8,7 @@ export default function Hero() {
   return (
     <View className="relative h-[480px] overflow-hidden bg-ink">
       <Image
-        source={{ uri: HERO_IMAGE }}
+        source={HERO_IMAGE}
         contentFit="cover"
         transition={300}
         className="absolute inset-0 h-full w-full"
