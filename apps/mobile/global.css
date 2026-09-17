@@ -13,9 +13,17 @@
   --color-gold: #A6813C;
   --color-sage: #8B8A7D;
   --color-good: #5C7A52;
+  --color-line: rgba(25, 23, 20, 0.14);
 
   /* Fonts */
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-display: ui-serif, Georgia, serif;
-  --font-mono: ui-monospace, monospace;
+  --font-sans: "Inter_400Regular";
+  --font-display: "Fraunces_500Medium";
+  --font-mono: "SpaceMono_400Regular";
+  --font-inter-medium: "Inter_500Medium";
+  --font-inter-semibold: "Inter_600SemiBold";
+  --font-fraunces-regular: "Fraunces_400Regular";
+  --font-fraunces-italic: "Fraunces_400Regular_Italic";
+  --font-fraunces-medium-italic: "Fraunces_500Medium_Italic";
+  --font-fraunces-semibold: "Fraunces_600SemiBold";
+  --font-space-mono-bold: "SpaceMono_700Bold";
 }
