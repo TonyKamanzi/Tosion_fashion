@@ -6,19 +6,21 @@ import ProductGrid from "@/components/ProductGrid";
 import Editorial from "@/components/Editorial";
 import Newsletter from "@/components/Newsletter";
 import Footer from "@/components/Footer";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 
 export default function Home() {
   return (
-    <ScrollView className="flex-1 bg-bone">
+    <View className="flex-1 bg-bone">
       <Header />
-      <Hero />
-      <Marquee />
-      <CategoryScroller />
-      <ProductGrid />
-      <Editorial />
-      <Newsletter />
-      <Footer />
-    </ScrollView>
+      <ScrollView>
+        <Hero />
+        <Marquee />
+        <CategoryScroller />
+        <ProductGrid />
+        <Editorial />
+        <Newsletter />
+        <Footer />
+      </ScrollView>
+    </View>
   );
 }
