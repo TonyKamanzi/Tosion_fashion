@@ -16,7 +16,7 @@ export default function Editorial() {
           The Journal
         </Text>
         <Text className="font-fraunces-regular text-[21px] italic leading-[29px] text-bone text-center">
-          "Choosing pieces that earn their place."
+          “Choosing pieces that earn their place.”
         </Text>
         <Text className="font-mono text-[10.5px] text-sage mt-[18px]">
           — Studio notes, AW26

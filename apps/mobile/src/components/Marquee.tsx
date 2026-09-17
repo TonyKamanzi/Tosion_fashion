@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Animated, Easing, LayoutChangeEvent, Text, View } from "react-native";
 
 const TICKS = ["FREE SHIPPING $150+", "NEW ARRIVALS WEEKLY", "30-DAY RETURNS"];
@@ -20,7 +20,7 @@ function Ticks({ onLayout }: { onLayout?: (event: LayoutChangeEvent) => void }) 
 }
 
 export default function Marquee() {
-  const translateX = useRef(new Animated.Value(0)).current;
+  const [translateX] = useState(() => new Animated.Value(0));
   const [tickWidth, setTickWidth] = useState(0);
 
   useEffect(() => {
